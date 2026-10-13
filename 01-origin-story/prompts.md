@@ -24,6 +24,12 @@ prompt library built from your own questions.
 
 ### 1.
 
+Do we have any past data (incident counts, pings, etc) that would support the hypothesis that there is a seasonal August dip?
+
 ### 2.
 
+Not yet. Can you quantify proximity vs misses before and after the 4.2 release to dig into the hypothesis that weighting proximity up while recent-acceptance still penalizes decliners could starve some responders of pings?
+
 ### 3.
+
+One more follow up before next steps, you didn't include Ravi in the TLDR above but you did in the .md, is there a reason?
