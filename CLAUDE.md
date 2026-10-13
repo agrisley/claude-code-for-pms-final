@@ -90,3 +90,10 @@ Priya's handover says to ask the engineering manager for numbers. Ravi is the on
 
 ### How to help me
 Separate what the sources say from what is inferred. Cite the page. Flag when a claim has no data behind it. Don't invent metrics.
+
+### Findings from the interviews and support tickets (Module 2)
+- Four handler interviews (Dot, Ambrose, Halloran, Kip; 2-5 Sep) and 147 support tickets (29 Jun to 7 Sep, 12 handlers) agree on two 4.2 problems: pings gone before the responder can answer (13 tickets, 9 handlers) and responders going quiet (32 tickets, 4 responders). Together they cover all 16 responders; only Ambrose is in both.
+- Call data: missed pings about 2% to 13%, callouts with a missed ping 3% to 23%. The four quiet responders fell from 49 to 3 pings a week over four weeks (a slide, not a step) while everyone else rose from 123 to 162. Inference, unconfirmed: the 60s wait drives the misses, and misses lower recent acceptance, which lowers rank. This replaces the earlier "starved for declining" idea.
+- Tickets undercount: Dot (Vesper), Kip (Meteor Mite, The Gale) and Halloran never filed one. Linda Pruitt (Farlight) and Desmond Okafor (The Undertow) filed 22 of the 32 quiet tickets as repeated follow-ups. All 45 callout-related tickets are open. "3x normal" does not reproduce: about 12x for callout tickets only, about 4x for all tickets.
+- Saved this session in 00-rook/feedback: 4-2-pings-one-pager.md and journey-map.html.
+- Still open: ask Wen Li whether a miss lowers rank like a decline and whether there is a floor; ask Ravi for time-to-respond, prior-year data and phone delivery logs for the four; ask Nadia for tickets from Dot's and Kip's side and replies to the open ones; meet Helen on Q3 commitments.

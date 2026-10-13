@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rook Dispatch: one callout, before and after 4.2</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{--surface-1:#f5f4ee;--surface-2:#ffffff;--border:rgba(0,0,0,.12);--border-strong:rgba(0,0,0,.25);--border-stronger:rgba(0,0,0,.4);--text-primary:#1f1e1d;--text-secondary:#5f5e5a;--text-muted:#888780;--text-danger:#a32d2d;--bg-danger:#fcebeb;--text-warning:#854f0b;--bg-warning:#faeeda;--radius:8px;--font-sans:system-ui,-apple-system,"Segoe UI",sans-serif;--font-voice:Georgia,serif}
+@media (prefers-color-scheme: dark){:root{--surface-1:#2a2a28;--surface-2:#1f1e1d;--border:rgba(255,255,255,.14);--border-strong:rgba(255,255,255,.28);--border-stronger:rgba(255,255,255,.45);--text-primary:#f1efe8;--text-secondary:#b4b2a9;--text-muted:#888780;--text-danger:#f09595;--bg-danger:#501313;--text-warning:#fac775;--bg-warning:#412402}}
+body{font-family:var(--font-sans);background:var(--surface-2);color:var(--text-primary);max-width:760px;margin:24px auto;padding:0 16px;line-height:1.5}
+h1{font-size:22px;font-weight:500;margin:0 0 4px}
+.sub{font-size:13px;color:var(--text-secondary);margin:0 0 12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.g{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.c{background:var(--surface-1);border-radius:var(--radius);padding:8px 10px;font-size:12px;line-height:1.45;color:var(--text-primary)}
+.h{border-radius:var(--radius);padding:8px 10px;font-size:13px;font-weight:500;position:relative}
+.h small{display:block;font-size:11px;font-weight:400;margin-top:2px}
+.h.n{background:var(--surface-1);color:var(--text-primary)}
+.h.w{background:var(--bg-warning);color:var(--text-warning)}
+.h.r{background:var(--bg-danger);color:var(--text-danger)}
+.rl{font-size:12px;font-weight:500;color:var(--text-secondary);margin:14px 0 6px;display:flex;align-items:center;gap:6px}
+.rl span{font-weight:400;color:var(--text-muted)}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:2px 8px;border:0.5px solid var(--border-strong);border-radius:var(--radius);margin:0 4px 4px 0;background:var(--surface-2)}
+.q{font-family:var(--font-voice);font-size:13px}
+.q b{display:block;font-family:var(--font-sans);font-weight:400;font-size:11px;color:var(--text-muted);margin-top:4px}
+.ar{position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:14px;z-index:1;color:var(--text-muted)}
+.dz{border:0.5px solid var(--border-strong);border-radius:12px;padding:4px 12px 14px;margin-top:16px;background:var(--surface-2)}
+.dz .big{font-size:26px;font-weight:500;line-height:1.15}
+.bar{height:10px;border-radius:5px;background:var(--border);margin:8px 0 6px}
+.bar i{display:block;height:100%;border-radius:5px;background:var(--text-muted)}
+.a.r{background:var(--bg-danger);color:var(--text-danger)}
+.a.w{background:var(--bg-warning);color:var(--text-warning)}
+.a .bar{background:rgba(127,127,127,.2)}
+.a .bar i{background:currentColor}
+.src{font-size:11px;color:var(--text-muted);margin-top:4px}
+.a .src{color:inherit;opacity:.8}
+.d{text-align:center;padding:10px 6px}
+.d b{display:block;font-size:20px;font-weight:500;color:var(--text-danger)}
+.d span{font-size:11px;color:var(--text-secondary)}
+.tl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:6px}
+.tl h3{font-size:13px;font-weight:500;margin:0 0 2px}
+.tl p{font-size:12px;color:var(--text-secondary);margin:0}
+.sv{font-size:11px;fill:var(--text-secondary)}
+</style>
+</head>
+<body>
+<h1>Rook Dispatch: one callout, before and after 4.2</h1>
+<p class="sub">Before = 29 Jun to 11 Aug. After = 12 Aug to 7 Sep. Pings and callouts from rook-database; tickets from support_tickets; quotes from four September handler interviews.</p>
+<h2 class="sr">Journey map of one callout in Rook Dispatch with a highlighted call data section: before and after 12 August by stage, plus weekly charts of pings, missed pings and callout tickets.</h2>
+
+<div class="g" style="margin-top:4px">
+  <div class="h w">1 · Rank<small>Changed, unseen</small><i class="ti ti-chevron-right ar" aria-hidden="true"></i></div>
+  <div class="h w">2 · Ping sent<small>Pings shifted</small><i class="ti ti-chevron-right ar" aria-hidden="true"></i></div>
+  <div class="h r">3 · Responder answers<small>Hurting</small><i class="ti ti-chevron-right ar" aria-hidden="true"></i></div>
+  <div class="h r">4 · Moves on<small>Hurting</small><i class="ti ti-chevron-right ar" aria-hidden="true"></i></div>
+  <div class="h r">5 · Aftermath<small>Hurting</small></div>
+</div>
+
+<div class="rl"><i class="ti ti-users" aria-hidden="true"></i>Who is handling it <span>by role</span></div>
+<div class="g">
+  <div class="c"><span class="chip"><i class="ti ti-cpu" aria-hidden="true"></i>Rook ranking</span><span class="chip"><i class="ti ti-user" aria-hidden="true"></i>Wen Li, Marcus</span><span class="chip"><i class="ti ti-headset" aria-hidden="true"></i>Handler watches</span></div>
+  <div class="c"><span class="chip"><i class="ti ti-cpu" aria-hidden="true"></i>Rook push</span><span class="chip"><i class="ti ti-device-mobile" aria-hidden="true"></i>Responder's phone</span></div>
+  <div class="c"><span class="chip"><i class="ti ti-device-mobile" aria-hidden="true"></i>Responder</span><br>Alone, phone in hand</div>
+  <div class="c"><span class="chip"><i class="ti ti-cpu" aria-hidden="true"></i>Rook ranking</span><span class="chip"><i class="ti ti-headset" aria-hidden="true"></i>Handler, after the fact</span></div>
+  <div class="c"><span class="chip"><i class="ti ti-headset" aria-hidden="true"></i>Handler</span><span class="chip"><i class="ti ti-lifebuoy" aria-hidden="true"></i>Nadia</span><span class="chip"><i class="ti ti-chart-bar" aria-hidden="true"></i>Ravi</span><span class="chip"><i class="ti ti-compass" aria-hidden="true"></i>PM, Helen</span></div>
+</div>
+
+<div class="rl"><i class="ti ti-bolt" aria-hidden="true"></i>Action or job</div>
+<div class="g">
+  <div class="c">A callout comes in. Rook ranks responders by routing priority.</div>
+  <div class="c">A ping goes to the top-ranked responder's phone.</div>
+  <div class="c">They take it, turn it down, or miss it within the ping wait.</div>
+  <div class="c">If it isn't taken, it moves to the next responder.</div>
+  <div class="c">Handlers reassure and file tickets. Support, Data and PM look for the cause.</div>
+</div>
+
+<div class="rl"><i class="ti ti-message-circle" aria-hidden="true"></i>What they're thinking <span>four September interviews</span></div>
+<div class="g">
+  <div class="c q">"I'm not the person to ask about that part."<b>Kip</b></div>
+  <div class="c q">"I'll hear it buzz on the counter before he does."<b>Dot</b></div>
+  <div class="c q">"By the time he's actually got a thumb on the screen — it's gone."<b>Dot</b></div>
+  <div class="c q">"I heard about it after the fact, from him, not from the console."<b>Ambrose</b></div>
+  <div class="c q">"Mite thinks Mite's been forgotten. Gale's exhausted."<b>Kip</b></div>
+</div>
+
+<div class="dz">
+  <div class="rl" style="margin-top:10px;color:var(--text-primary)"><i class="ti ti-database" aria-hidden="true"></i>Call data <span>Bars share a scale within each column.</span></div>
+
+  <div class="rl" style="margin-top:8px"><i class="ti ti-calendar-event" aria-hidden="true"></i>Before 12 Aug <span>29 Jun to 11 Aug</span></div>
+  <div class="g">
+    <div class="c"><div class="big">39%</div>of pings to the top 5 responders<div class="bar"><i style="width:65%"></i></div><div class="src">Spread: 39–95 pings each</div></div>
+    <div class="c"><div class="big">49/wk</div>pings to the four who later went quiet<div class="bar"><i style="width:98%"></i></div><div class="src">6 tickets on duplicate or unreliable pings</div></div>
+    <div class="c"><div class="big">2%</div>of pings missed. Wait was 90s<div class="bar"><i style="width:10%"></i></div><div class="src">Taken 75–78% weekly</div></div>
+    <div class="c"><div class="big">3%</div>of callouts had a missed ping<div class="bar"><i style="width:12%"></i></div><div class="src">22% needed a second ping</div></div>
+    <div class="c"><div class="big">1.0/wk</div>callout tickets<div class="bar"><i style="width:8%"></i></div><div class="src">None on pings vanishing or quiet</div></div>
+  </div>
+
+  <div class="rl"><i class="ti ti-calendar-stats" aria-hidden="true"></i>After 12 Aug <span>12 Aug to 7 Sep</span></div>
+  <div class="g">
+    <div class="c a w"><div class="big">51%</div>of pings to the top 5. Out-of-area pings 17% → 39%<div class="bar"><i style="width:85%"></i></div><div class="src">Area is a rough proxy</div></div>
+    <div class="c a w"><div class="big">3/wk</div>to the four by 31 Aug. Everyone else 123 → 162<div class="bar"><i style="width:6%"></i></div><div class="src">The Gale 13 → 21/wk</div></div>
+    <div class="c a r"><div class="big">13%</div>missed. The four: 53–64%. Wait now 60s<div class="bar"><i style="width:65%"></i></div><div class="src">Taken 54% in release week, about 73% by 31 Aug</div></div>
+    <div class="c a r"><div class="big">23%</div>of callouts had a missed ping<div class="bar"><i style="width:92%"></i></div><div class="src">33% needed a second ping</div></div>
+    <div class="c a r"><div class="big">11.7/wk</div>callout tickets. 32 quiet, 13 ping gone<div class="bar"><i style="width:97%"></i></div><div class="src">All 45 still open</div></div>
+  </div>
+
+  <div class="rl"><i class="ti ti-arrows-diff" aria-hidden="true"></i>Change</div>
+  <div class="g">
+    <div class="c d"><b>+12 pts</b><span>top-5 share</span></div>
+    <div class="c d"><b>−94%</b><span>pings to the four</span></div>
+    <div class="c d"><b>×6</b><span>missed pings</span></div>
+    <div class="c d"><b>×8</b><span>callouts with a miss</span></div>
+    <div class="c d"><b>×12</b><span>callout tickets</span></div>
+  </div>
+
+  <div class="rl" style="margin-top:18px"><i class="ti ti-chart-line" aria-hidden="true"></i>Week by week <span>10 weeks from 29 Jun. Dashed line is 12 Aug.</span></div>
+  <div class="tl">
+    <div>
+      <h3>Pings per week</h3><p>Same work, shared differently</p>
+      <svg width="100%" viewBox="0 0 220 135" role="img"><title>Pings per week</title><desc>Pings to four responders fall from about 49 to 3 a week after 12 August while pings to everyone else rise from about 123 to 162.</desc>
+        <line x1="12" y1="110" x2="208" y2="110" style="stroke:var(--border-strong)" stroke-width="0.5"/>
+        <line x1="145" y1="8" x2="145" y2="112" style="stroke:var(--text-muted)" stroke-width="1" stroke-dasharray="3 3"/>
+        <polyline fill="none" style="stroke:var(--text-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="20,37.6 40,38.2 60,35.9 80,35.9 100,39.4 120,37.6 140,31.2 160,26.5 180,18.2 200,14.7"/>
+        <polyline fill="none" style="stroke:var(--text-danger)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" points="20,81.2 40,81.8 60,81.8 80,80.6 100,80.6 120,81.2 140,84.7 160,100.6 180,106.5 200,108.2"/>
+        <text class="sv" x="22" y="22">Everyone else 123 → 162</text>
+        <text class="sv" x="22" y="68" style="fill:var(--text-danger)">The four 49 → 3</text>
+        <text class="sv" x="8" y="126">29 Jun</text><text class="sv" x="145" y="126" text-anchor="middle">12 Aug</text><text class="sv" x="172" y="126">31 Aug</text>
+      </svg>
+    </div>
+    <div>
+      <h3>Missed pings per week</h3><p>From 2–6 to 38, still 21</p>
+      <svg width="100%" viewBox="0 0 220 135" role="img"><title>Missed pings per week</title><desc>Missed pings run 2 to 6 a week before the 4.2 release, jump to 38 in the release week, then ease to 28, 24 and 21.</desc>
+        <line x1="12" y1="110" x2="208" y2="110" style="stroke:var(--border-strong)" stroke-width="0.5"/>
+        <rect x="14" y="102.5" width="12" height="7.5" rx="2" style="fill:var(--text-muted)"/><rect x="34" y="100" width="12" height="10" rx="2" style="fill:var(--text-muted)"/><rect x="54" y="95" width="12" height="15" rx="2" style="fill:var(--text-muted)"/><rect x="74" y="97.5" width="12" height="12.5" rx="2" style="fill:var(--text-muted)"/><rect x="94" y="100" width="12" height="10" rx="2" style="fill:var(--text-muted)"/><rect x="114" y="105" width="12" height="5" rx="2" style="fill:var(--text-muted)"/>
+        <rect x="134" y="15" width="12" height="95" rx="2" style="fill:var(--text-danger)"/><rect x="154" y="40" width="12" height="70" rx="2" style="fill:var(--text-danger)"/><rect x="174" y="50" width="12" height="60" rx="2" style="fill:var(--text-danger)"/><rect x="194" y="57.5" width="12" height="52.5" rx="2" style="fill:var(--text-danger)"/>
+        <line x1="145" y1="8" x2="145" y2="112" style="stroke:var(--text-muted)" stroke-width="1" stroke-dasharray="3 3"/>
+        <text class="sv" x="22" y="30">38 in the</text><text class="sv" x="22" y="44">release week</text>
+        <text class="sv" x="8" y="126">29 Jun</text><text class="sv" x="145" y="126" text-anchor="middle">12 Aug</text><text class="sv" x="172" y="126">31 Aug</text>
+      </svg>
+    </div>
+    <div>
+      <h3>Callout tickets per week</h3><p>Ping gone first, then quiet</p>
+      <svg width="100%" viewBox="0 0 220 135" role="img"><title>Callout tickets per week</title><desc>Callout-related tickets are 0 to 2 a week before 12 August. Ping-gone tickets peak at 7 in the release week, then quiet tickets rise to 13 by the week of 24 August.</desc>
+        <line x1="12" y1="110" x2="208" y2="110" style="stroke:var(--border-strong)" stroke-width="0.5"/>
+        <rect x="34" y="103.75" width="12" height="6.25" rx="2" style="fill:var(--text-muted)"/><rect x="54" y="97.5" width="12" height="12.5" rx="2" style="fill:var(--text-muted)"/><rect x="114" y="97.5" width="12" height="12.5" rx="2" style="fill:var(--text-muted)"/>
+        <rect x="134" y="103.75" width="12" height="6.25" rx="2" style="fill:var(--text-muted)"/><rect x="134" y="60" width="12" height="43.75" style="fill:var(--text-warning)"/>
+        <rect x="154" y="91.25" width="12" height="18.75" style="fill:var(--text-warning)"/><rect x="154" y="41.25" width="12" height="50" rx="2" style="fill:var(--text-danger)"/>
+        <rect x="174" y="97.5" width="12" height="12.5" style="fill:var(--text-warning)"/><rect x="174" y="16.25" width="12" height="81.25" rx="2" style="fill:var(--text-danger)"/>
+        <rect x="194" y="103.75" width="12" height="6.25" style="fill:var(--text-warning)"/><rect x="194" y="47.5" width="12" height="56.25" rx="2" style="fill:var(--text-danger)"/>
+        <line x1="145" y1="8" x2="145" y2="112" style="stroke:var(--text-muted)" stroke-width="1" stroke-dasharray="3 3"/>
+        <text class="sv" x="22" y="30">Peak 15</text>
+        <text class="sv" x="8" y="126">29 Jun</text><text class="sv" x="145" y="126" text-anchor="middle">12 Aug</text><text class="sv" x="172" y="126">31 Aug</text>
+      </svg>
+      <p><span style="color:var(--text-warning)">■</span> ping gone &nbsp;<span style="color:var(--text-danger)">■</span> quiet &nbsp;<span style="color:var(--text-muted)">■</span> other</p>
+    </div>
+  </div>
+  <p style="font-size:12px;color:var(--text-secondary);margin:10px 0 0">Charts count weeks starting Monday, so the 12 Aug week includes 10–11 Aug before launch.</p>
+</div>
+
+<div style="margin-top:16px;border:0.5px dashed var(--border-stronger);border-radius:var(--radius);padding:10px 12px;font-size:12px;color:var(--text-secondary);display:flex;gap:8px;align-items:flex-start">
+  <i class="ti ti-refresh" style="font-size:16px;margin-top:1px" aria-hidden="true"></i>
+  <span>Inferred loop, not confirmed: a miss lowers recent acceptance, which lowers rank, which sends fewer pings, which means fewer chances to take one. Wen Li needs to confirm.</span>
+</div>
+</body>
+</html>
