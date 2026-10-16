@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rook Dispatch: what 4.2 did, and what we do about it</title>
+<style>
+  :root {
+    --bg:#0e1526; --panel:#172138; --panel2:#1e2a47; --line:#2c3a5c;
+    --ink:#eaf0fb; --mute:#97a5c2; --blue:#5b8cff; --teal:#2ed3b7; --amber:#ffb84d; --red:#ff6b6b; --green:#3ddc97; --violet:#a78bfa;
+  }
+  * { box-sizing:border-box; }
+  html { scroll-snap-type:y proximity; scroll-behavior:smooth; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; line-height:1.45; }
+  .slide { min-height:100vh; scroll-snap-align:start; padding:56px 6vw 64px; display:flex; flex-direction:column; justify-content:center; position:relative; border-bottom:1px solid #0a1020; }
+  .slide:nth-of-type(even) { background:#111a2f; }
+  .wrap { width:100%; max-width:1180px; margin:0 auto; }
+  .kicker { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); font-weight:700; margin-bottom:10px; }
+  h1 { font-size:clamp(34px,5.4vw,64px); line-height:1.05; margin:0 0 16px; letter-spacing:-.02em; }
+  h2 { font-size:clamp(26px,3.4vw,40px); line-height:1.12; margin:0 0 14px; letter-spacing:-.015em; }
+  h3 { font-size:15px; margin:0 0 6px; }
+  p { margin:0 0 10px; }
+  .lead { font-size:clamp(16px,1.6vw,20px); color:#c9d4ea; max-width:900px; }
+  .mute { color:var(--mute); }
+  .small { font-size:13px; }
+  .grid { display:grid; gap:18px; }
+  .g2 { grid-template-columns:repeat(2,1fr); } .g3 { grid-template-columns:repeat(3,1fr); } .g4 { grid-template-columns:repeat(4,1fr); }
+  @media (max-width:900px){ .g2,.g3,.g4 { grid-template-columns:1fr; } }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:16px; padding:20px 22px; }
+  .card.hl { border-color:var(--blue); box-shadow:0 0 0 1px var(--blue) inset; }
+  .stat { font-size:clamp(34px,4.6vw,56px); font-weight:800; letter-spacing:-.02em; line-height:1; }
+  .stat small { font-size:.4em; font-weight:600; color:var(--mute); letter-spacing:0; }
+  .stat-label { color:var(--mute); font-size:13px; margin-top:8px; }
+  .chip { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:3px 9px; border-radius:99px; margin-right:6px; }
+  .c-fact { background:#12382f; color:var(--green); } .c-inf { background:#3b2f10; color:var(--amber); }
+  .c-open { background:#3b1b22; color:var(--red); } .c-mod { background:#1b2c57; color:#9db8ff; }
+  .tag-row { margin-bottom:14px; }
+  .prompt { background:#0a1020; border:1px solid var(--line); border-left:4px solid var(--violet); border-radius:12px; padding:16px 18px; }
+  .prompt .lab { font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--violet); font-weight:700; margin-bottom:8px; display:flex; justify-content:space-between; gap:8px; flex-wrap:wrap; }
+  .prompt .lab span:last-child { color:var(--mute); font-weight:600; letter-spacing:.04em; text-transform:none; }
+  .prompt .txt { font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace; font-size:13px; color:#d7defa; white-space:pre-wrap; }
+  .modhead { display:flex; align-items:center; gap:12px; margin-bottom:12px; }
+  .modnum { width:44px; height:44px; border-radius:12px; display:grid; place-items:center; font-weight:800; font-size:20px; background:var(--blue); color:#06102a; }
+  .modname { font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--mute); font-weight:700; }
+  svg text { font-family:inherit; }
+  .bar { height:14px; border-radius:8px; background:#26345a; overflow:hidden; display:flex; }
+  .bar i { display:block; height:100%; }
+  .row { display:flex; align-items:center; gap:12px; margin:8px 0; }
+  .row .nm { width:150px; font-size:13px; color:#c9d4ea; flex:none; }
+  .row .val { width:70px; text-align:right; font-weight:700; font-size:14px; flex:none; }
+  .row .bar { flex:1; }
+  .timeline { display:grid; grid-template-columns:repeat(6,1fr); gap:0; position:relative; margin-top:6px; }
+  .timeline::before { content:""; position:absolute; left:4%; right:4%; top:22px; height:3px; background:linear-gradient(90deg,var(--blue),var(--teal),var(--violet)); border-radius:3px; }
+  .step { text-align:center; padding:0 8px; position:relative; }
+  .step .dot { width:46px; height:46px; margin:0 auto 12px; border-radius:50%; background:var(--bg); border:3px solid var(--blue); display:grid; place-items:center; font-weight:800; position:relative; z-index:1; }
+  .step:nth-child(n+3) .dot { border-color:var(--teal); } .step:nth-child(n+5) .dot { border-color:var(--violet); }
+  .step b { display:block; font-size:14px; } .step span { display:block; font-size:12px; color:var(--mute); margin-top:4px; }
+  @media (max-width:900px){ .timeline { grid-template-columns:1fr 1fr; row-gap:22px; } .timeline::before { display:none; } }
+  .check { display:flex; gap:12px; align-items:flex-start; }
+  .badge { flex:none; font-size:11px; font-weight:800; letter-spacing:.06em; padding:4px 10px; border-radius:8px; }
+  .b-pass { background:#12382f; color:var(--green); } .b-part { background:#3b2f10; color:var(--amber); } .b-fail { background:#3b1b22; color:var(--red); }
+  .lane { display:grid; grid-template-columns:130px 1fr 1fr; gap:10px; align-items:stretch; font-size:13px; margin:8px 0; }
+  .lane > div { background:var(--panel2); border-radius:10px; padding:10px 12px; }
+  .lane .who { background:transparent; color:var(--mute); font-weight:700; padding-left:0; }
+  .lane .bad { border-left:3px solid var(--red); } .lane .good { border-left:3px solid var(--green); }
+  .proto-frame { width:100%; height:640px; border:1px solid var(--line); border-radius:14px; background:#fff; }
+  a { color:#9db8ff; }
+  .nav { position:fixed; right:18px; top:50%; transform:translateY(-50%); display:flex; flex-direction:column; gap:9px; z-index:10; }
+  .nav a { width:10px; height:10px; border-radius:50%; background:#3a4a72; display:block; transition:.2s; }
+  .nav a.on { background:var(--teal); transform:scale(1.5); }
+  .count { position:fixed; left:18px; bottom:14px; font-size:12px; color:var(--mute); z-index:10; }
+  .hint { position:absolute; bottom:18px; left:50%; transform:translateX(-50%); font-size:12px; color:var(--mute); }
+  ul.tight { margin:6px 0 0; padding-left:18px; } ul.tight li { margin:4px 0; }
+  .arrow { color:var(--mute); padding:0 6px; }
+  .pill-row span { display:inline-block; background:var(--panel2); border:1px solid var(--line); border-radius:99px; padding:5px 12px; font-size:13px; margin:0 6px 8px 0; }
+  .strike { text-decoration:line-through; color:var(--mute); }
+  @media print { .nav,.count,.hint{display:none;} .slide{page-break-after:always;} }
+</style>
+</head>
+<body>
+<nav class="nav" id="nav"></nav>
+<div class="count" id="count"></div>
+
+<!-- 1 TITLE -->
+<section class="slide" id="s1">
+  <div class="wrap">
+    <div class="kicker">Rook Dispatch · Final report · Draft for Helen Achebe</div>
+    <h1>What release 4.2 did to our responders, and what we build instead</h1>
+    <p class="lead">Six working sessions, one question: why did callout tickets jump after 12 August, and how do we fix it without quietly changing a number? Every claim below is tagged as a fact from a source, an inference, or still open.</p>
+    <div class="tag-row" style="margin-top:22px">
+      <span class="chip c-fact">Fact: from a source</span><span class="chip c-inf">Inference: reasoned, not confirmed</span><span class="chip c-open">Open: not yet known</span>
+    </div>
+    <p class="small mute">Rook Industries is a fictional teaching scenario. Responders appear by cover name only; nothing here maps a cover name to a person.</p>
+  </div>
+  <div class="hint">Scroll, or use the arrow keys ↓</div>
+</section>
+
+<!-- 2 EXEC SUMMARY -->
+<section class="slide" id="s2">
+  <div class="wrap">
+    <div class="kicker">Executive summary</div>
+    <h2>4.2 made a few responders go quiet, and our scoring rules keep them quiet.</h2>
+    <p class="lead">Release 4.2 shortened the ping wait from 90s to 60s and re-weighted routing toward proximity. Pings that used to be answered started lapsing. The scoring code treats a miss like a decline, never forgives it, and only a taken ping earns points back. A responder who stops being offered pings has no way to recover.</p>
+    <div class="grid g4" style="margin-top:20px">
+      <div class="card"><div class="stat" style="color:var(--red)">2.3%<span class="arrow">→</span>18.0%</div><div class="stat-label">Share of pings missed, before vs after 4.2 (about 8x)</div></div>
+      <div class="card"><div class="stat" style="color:var(--amber)">49<span class="arrow">→</span>3</div><div class="stat-label">Pings a week to the four quiet responders, over four weeks. Everyone else rose 123 → 162</div></div>
+      <div class="card"><div class="stat" style="color:var(--red)">45</div><div class="stat-label">Callout-related tickets, all still open</div></div>
+      <div class="card"><div class="stat" style="color:var(--teal)">6</div><div class="stat-label">Stage 1 changes proposed: free miss, 75s countdown, one-time rank restore, handler flag, snooze, optional dead-phone guard</div></div>
+    </div>
+    <div class="grid g3" style="margin-top:18px">
+      <div class="card"><h3>What happened</h3><p class="small mute">Abrupt drop at release, not a slow slide. Data window is 29 Jun to 6 Sep, so "seasonal August dip" cannot be tested, and nothing in the sources supports it.</p></div>
+      <div class="card"><h3>What we'd build</h3><p class="small mute">A miss stops lowering rank, a turn-down still does. Wait goes to 75s with a visible countdown. Handlers see who has gone quiet. Weights move in Stage 2 after 2 to 3 weeks of data.</p></div>
+      <div class="card"><h3>How we stop a repeat</h3><p class="small mute">A reusable review-checklist skill runs four checks on any brief, and runs every Monday morning: owner, success measure, scope, problem before fix.</p></div>
+    </div>
+    <p class="small mute" style="margin-top:14px">Not yet verified: why the four miss so often (phone delivery, the 60s wait, or availability). The brief has not been seen by Marcus Oyelaran or Wen Li.</p>
+  </div>
+</section>
+
+<!-- 3 PROBLEM STATEMENT -->
+<section class="slide" id="s3">
+  <div class="wrap">
+    <div class="kicker">Problem statement and what we set out to do</div>
+    <h2>Callout tickets are about 4 to 12x normal since 4.2, and nobody could say why.</h2>
+    <div class="grid g2" style="margin-top:10px">
+      <div class="card hl">
+        <h3>The problem</h3>
+        <p>Since 4.2 shipped on 12 August, handlers write in about two things: "my phone never goes off" and "ping gone before I could answer". The hand-over said it was a seasonal August dip that would recover in September. <b>No numbers supported that.</b> The one-third theme fits the shorter wait; the two-thirds theme had no explanation.</p>
+        <p class="small mute">Ticket volume: "3x normal" does not reproduce. It is about 12x for callout tickets only and about 4x for all tickets (support_tickets table).</p>
+      </div>
+      <div class="card">
+        <h3>What we set out to do</h3>
+        <ul class="tight">
+          <li><b>Find out what 4.2 actually did</b> to responders, from data, not hunches.</li>
+          <li><b>Find the mechanism</b> in the code and the people it happens to.</li>
+          <li><b>Design the fix</b> from the point of view of the responder, as a clickable prototype, instead of quietly changing a number.</li>
+          <li><b>Make the review habit reusable</b> so the next brief gets the same scrutiny.</li>
+        </ul>
+        <p class="small mute" style="margin-top:12px">Out of scope: reverting 4.2, fixing phone delivery, any identity inference (Security Policy 4.1), changes to Supply.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4 METHODOLOGY -->
+<section class="slide" id="s4">
+  <div class="wrap">
+    <div class="kicker">Methodology</div>
+    <h2>Six steps, each one narrowing the question.</h2>
+    <div class="timeline" style="margin-top:30px">
+      <div class="step"><div class="dot">1</div><b>Origin story</b><span>Wiki, hand-over note, first look at the database</span></div>
+      <div class="step"><div class="dot">2</div><b>Super hearing</b><span>4 handler interviews, 147 tickets</span></div>
+      <div class="step"><div class="dot">3</div><b>Rewind</b><span>Pings by responder, week and time of day</span></div>
+      <div class="step"><div class="dot">4</div><b>X-ray vision</b><span>Read the routing code in full</span></div>
+      <div class="step"><div class="dot">5</div><b>Super speed</b><span>One-page brief and clickable prototype</span></div>
+      <div class="step"><div class="dot">6</div><b>Sidekicks</b><span>Review skill and Monday schedule</span></div>
+    </div>
+    <div class="grid g3" style="margin-top:34px">
+      <div class="card"><h3>Ground rules</h3><ul class="tight small"><li>Separate what a source says from what is inferred.</li><li>Cite the page, flag claims with no data, never invent a metric.</li><li>Use rates, not counts: the windows are unequal (44 days before 4.2, 26 after).</li></ul></div>
+      <div class="card"><h3>Sources</h3><ul class="tight small"><li>rook-wiki: Glossary, Team directory, releases, roadmap, briefs, 4.2 comments.</li><li>rook-database: callouts, pings, responders, handlers, support_tickets.</li><li>Handler interviews, Priya's hand-over, the dispatch-routing code.</li></ul></div>
+      <div class="card"><h3>Limits</h3><ul class="tight small"><li>Database covers 29 Jun to 6 Sep only: no prior-year data.</li><li>16 responders, about 10 weeks. No responder has been interviewed.</li><li>No delivery or ranking data exists; <code>push_to_device</code> is a stub.</li></ul></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 WHAT HAPPENED -->
+<section class="slide" id="s5">
+  <div class="wrap">
+    <div class="kicker">What happened with release 4.2</div>
+    <h2>Three changes shipped together. The wait got shorter and the ranking got stricter.</h2>
+    <div class="grid g3" style="margin-top:8px">
+      <div class="card">
+        <h3>Ping wait</h3>
+        <svg viewBox="0 0 300 70" width="100%"><rect x="0" y="10" width="270" height="18" rx="9" fill="#26345a"/><rect x="0" y="10" width="270" height="18" rx="9" fill="#5b8cff"/><text x="8" y="23" font-size="11" fill="#06102a" font-weight="700">before: 90s</text><rect x="0" y="40" width="180" height="18" rx="9" fill="#ff6b6b"/><text x="8" y="53" font-size="11" fill="#2a0a0a" font-weight="700">4.2: 60s</text></svg>
+        <p class="small mute">Gap after a missed ping: 92s before, 62s after. Callout to first ping is unchanged (about 14s). <span class="chip c-fact">Fact</span></p>
+      </div>
+      <div class="card">
+        <h3>Routing weights</h3>
+        <svg viewBox="0 0 300 90" width="100%">
+          <rect x="0" y="10" width="135" height="20" fill="#5b8cff"/><rect x="135" y="10" width="120" height="20" fill="#2ed3b7"/><rect x="255" y="10" width="45" height="20" fill="#a78bfa"/>
+          <text x="6" y="24" font-size="10" fill="#06102a" font-weight="700">proximity .45</text><text x="140" y="24" font-size="10" fill="#052a24" font-weight="700">recent acceptance .40</text>
+          <rect x="0" y="50" width="180" height="20" fill="#5b8cff"/><rect x="180" y="50" width="75" height="20" fill="#2ed3b7"/><rect x="255" y="50" width="45" height="20" fill="#a78bfa"/>
+          <text x="6" y="64" font-size="10" fill="#06102a" font-weight="700">proximity .60</text><text x="184" y="64" font-size="10" fill="#052a24" font-weight="700">.25</text>
+          <text x="0" y="86" font-size="10" fill="#97a5c2">capability stays .15 (violet)</text>
+        </svg>
+        <p class="small mute">Global weights, applied to everyone. <span class="chip c-fact">Fact (config.py)</span></p>
+      </div>
+      <div class="card">
+        <h3>Scoring rule that bites</h3>
+        <div class="row" style="margin-top:2px"><div class="nm">Miss or decline</div><div class="bar"><i style="width:60%;background:var(--red)"></i></div><div class="val" style="color:var(--red)">−0.12</div></div>
+        <div class="row"><div class="nm">Taken</div><div class="bar"><i style="width:40%;background:var(--green)"></i></div><div class="val" style="color:var(--green)">+0.08</div></div>
+        <p class="small mute">Floor 0, no fade. A responder only gains if they take more than about 6 in 10. <span class="chip c-fact">Fact (history.py)</span></p>
+      </div>
+    </div>
+    <div class="grid g2" style="margin-top:18px">
+      <div class="card">
+        <h3>Weekly acceptance rate (share of pings taken)</h3>
+        <svg viewBox="0 0 520 190" width="100%">
+          <line x1="40" y1="20" x2="40" y2="160" stroke="#2c3a5c"/><line x1="40" y1="160" x2="510" y2="160" stroke="#2c3a5c"/>
+          <text x="6" y="38" font-size="10" fill="#97a5c2">80%</text><text x="6" y="98" font-size="10" fill="#97a5c2">65%</text><text x="6" y="158" font-size="10" fill="#97a5c2">50%</text>
+          <rect x="40" y="31" width="250" height="14" fill="#3ddc97" opacity=".28"/>
+          <text x="48" y="28" font-size="11" fill="#3ddc97">75–78% for six weeks</text>
+          <line x1="290" y1="20" x2="290" y2="160" stroke="#ffb84d" stroke-dasharray="4 4"/><text x="296" y="30" font-size="10" fill="#ffb84d">4.2 ships, 12 Aug</text>
+          <circle cx="300" cy="128" r="6" fill="#ff6b6b"/><text x="312" y="132" font-size="12" fill="#ff6b6b" font-weight="700">54%</text>
+          <line x1="300" y1="128" x2="470" y2="66" stroke="#97a5c2" stroke-dasharray="3 4"/>
+          <circle cx="470" cy="66" r="6" fill="#ffb84d"/><text x="404" y="56" font-size="12" fill="#ffb84d" font-weight="700">about 73%, week of 31 Aug</text>
+        </svg>
+        <p class="small mute">Intermediate weeks omitted: only the values in my notes are plotted. An abrupt drop at release does not look like a seasonal slide. <span class="chip c-fact">Fact (database)</span></p>
+      </div>
+      <div class="card">
+        <h3>Share of pings missed</h3>
+        <div class="row"><div class="nm">Before 4.2</div><div class="bar"><i style="width:12.8%;background:var(--green)"></i></div><div class="val">2.3%</div></div>
+        <div class="row"><div class="nm">After 4.2</div><div class="bar"><i style="width:100%;background:var(--red)"></i></div><div class="val">18.0%</div></div>
+        <div class="row"><div class="nm">Week of 31 Aug</div><div class="bar"><i style="width:70.5%;background:var(--amber)"></i></div><div class="val">12.7%</div></div>
+        <p class="small mute" style="margin-top:12px">Misses are spread across almost everyone (in-area misses 0.7% to 10.3%): consistent with the shorter wait. But four responders stand out.</p>
+        <span class="chip c-inf">Inference</span><span class="small mute">The 60s wait drives the misses; misses lower rank; lower rank means fewer pings.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 MODULE 1 -->
+<section class="slide" id="s6">
+  <div class="wrap">
+    <div class="modhead"><div class="modnum">1</div><div><div class="modname">Module 1 · Origin story</div></div></div>
+    <h2>The drop happened at release, and four responders took most of it.</h2>
+    <div class="grid g2">
+      <div>
+        <div class="card">
+          <h3>Four responders lost about two thirds of their pings</h3>
+          <div class="row"><div class="nm">Before 4.2</div><div class="bar"><i style="width:100%;background:var(--blue)"></i></div><div class="val">7.0 / day</div></div>
+          <div class="row"><div class="nm">After 4.2</div><div class="bar"><i style="width:31.4%;background:var(--red)"></i></div><div class="val">2.2 / day</div></div>
+          <p class="small mute" style="margin-top:10px">Farlight, The Undertow, Meteor Mite, Vesper. They miss 53% of even home-area pings. Their earlier decline rates were ordinary, so "starved for declining" is not supported.</p>
+          <p class="small mute">Out-of-area pings rose from 17% to 39% of all pings, which cuts against "proximity weighted up". <span class="chip c-open">Open: ask Wen Li</span></p>
+        </div>
+        <div class="card" style="margin-top:14px"><h3>Artifact this led to</h3><p class="small mute">The weekly series above (acceptance flat at 75–78%, then 54% in the release week), and the finding that the database cannot test "August is always soft": it has no prior-year data.</p></div>
+      </div>
+      <div class="prompt">
+        <div class="lab"><span>Prompt that produced it</span><span>Module 1 · #2 · exactly as typed</span></div>
+        <div class="txt">Not yet. Can you quantify proximity vs misses before and after the 4.2 release to dig into the hypothesis that weighting proximity up while recent-acceptance still penalizes decliners could starve some responders of pings?</div>
+        <p class="small mute" style="margin-top:12px">It followed prompt #1, which asked for past data to support a seasonal dip. There was none.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 MODULE 2 -->
+<section class="slide" id="s7">
+  <div class="wrap">
+    <div class="modhead"><div class="modnum">2</div><div><div class="modname">Module 2 · Super hearing</div></div></div>
+    <h2>Handlers and tickets agree on two problems, and the journey map shows who feels what.</h2>
+    <div class="grid g2">
+      <div>
+        <div class="grid g2">
+          <div class="card"><div class="stat" style="color:var(--amber)">13</div><div class="stat-label">tickets, 9 handlers: "pings gone before the responder can answer"</div></div>
+          <div class="card"><div class="stat" style="color:var(--red)">32</div><div class="stat-label">tickets, 4 responders: "responders going quiet"</div></div>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>Journey map (artifact): what changed along the path</h3>
+          <div class="lane"><div class="who">Handler</div><div class="bad">Sends callout, then watches pings lapse and tickets pile up</div><div class="good">Wants: know a responder has gone quiet before a ticket</div></div>
+          <div class="lane"><div class="who">Responder</div><div class="bad">60s to answer; misses quietly lower rank</div><div class="good">Wants: work offered again, and to know why</div></div>
+          <p class="small mute">Full map: <a href="00-rook/feedback/journey-map.html">00-rook/feedback/journey-map.html</a>. Tickets undercount: Dot, Kip and Halloran never filed one.</p>
+        </div>
+      </div>
+      <div class="prompt">
+        <div class="lab"><span>Prompt that produced it</span><span>Module 2 · #7 · exactly as typed</span></div>
+        <div class="txt">create a journey map artifact of the process for our users with a row for action/job, thinking (per interviews), data before aug 12 and data after aug 12 , whose role is handling what. this should pain the story of whats happening visually, ask me 1-3 clariyfing questions as needed</div>
+        <p class="small mute" style="margin-top:12px">Four handler interviews (2 to 5 Sep) and 147 tickets (29 Jun to 7 Sep, 12 handlers). All 45 callout tickets are still open. <span class="chip c-fact">Fact</span></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 MODULE 3 -->
+<section class="slide" id="s8">
+  <div class="wrap">
+    <div class="modhead"><div class="modnum">3</div><div><div class="modname">Module 3 · Rewind</div></div></div>
+    <h2>Farlight went from being offered every callout in her area to almost none.</h2>
+    <div class="grid g2">
+      <div>
+        <div class="card">
+          <h3>Farlight's home area (Uptown): callouts she was offered</h3>
+          <div class="row"><div class="nm">Before 4.2</div><div class="bar"><i style="width:100%;background:var(--green)"></i></div><div class="val">59 of 59</div></div>
+          <div class="row"><div class="nm">After 4.2</div><div class="bar"><i style="width:19.4%;background:var(--red)"></i></div><div class="val">6 of 31</div></div>
+          <p class="small mute" style="margin-top:10px">About 12 pings a week down to 0 by 31 Aug. Last ping taken 14 Aug. <span class="chip c-fact">Fact (database)</span></p>
+        </div>
+        <div class="card" style="margin-top:14px">
+          <h3>The four vs everyone else, pings per week</h3>
+          <svg viewBox="0 -12 440 148" width="100%">
+            <rect x="40" y="86" width="40" height="34" fill="#5b8cff"/><text x="52" y="80" font-size="11" fill="#97a5c2">49</text>
+            <rect x="90" y="118" width="40" height="2" fill="#ff6b6b"/><text x="104" y="112" font-size="11" fill="#ff6b6b">3</text>
+            <text x="30" y="132" font-size="10" fill="#97a5c2">four quiet: start, +4 wks</text>
+            <rect x="250" y="34" width="40" height="86" fill="#5b8cff" opacity=".6"/><text x="259" y="28" font-size="11" fill="#97a5c2">123</text>
+            <rect x="300" y="7" width="40" height="113" fill="#3ddc97" opacity=".8"/><text x="309" y="2" font-size="11" fill="#3ddc97">162</text>
+            <text x="250" y="132" font-size="10" fill="#97a5c2">everyone else: start, +4 wks</text>
+          </svg>
+          <p class="small mute">Over four weeks: a slide, not a step. Bars are to scale with each other.</p>
+        </div>
+      </div>
+      <div class="prompt">
+        <div class="lab"><span>Prompt that produced it</span><span>Module 3 · #10 · exactly as typed</span></div>
+        <div class="txt">I want to look now only at Farlight. Show me every week for them, how many times we pinged them, how many they took. Then tell me what happened to that person, week by week, in plain English.</div>
+        <p class="small mute" style="margin-top:12px">A later prompt asked what you would have missed with only a number and not the rows. This one is the answer: the single "3 to 23 misses" figure hides who lost the work. Counts are also not comparable across unequal windows, so the rate (2.3% to 18.0%) is the safer headline.</p>
+        <span class="chip c-open">Open</span><span class="small mute">Farlight's real rank and score on Uptown callouts (Wen Li); push delivery logs.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 MODULE 4 -->
+<section class="slide" id="s9">
+  <div class="wrap">
+    <div class="modhead"><div class="modnum">4</div><div><div class="modname">Module 4 · X-ray vision</div></div></div>
+    <h2>The code treats a miss like a decline, and the only way back is to take a callout.</h2>
+    <div class="grid g2">
+      <div>
+        <div class="card">
+          <h3>How a responder's score moves (history.py)</h3>
+          <svg viewBox="0 0 440 190" width="100%">
+            <line x1="40" y1="150" x2="430" y2="150" stroke="#2c3a5c"/><text x="6" y="154" font-size="10" fill="#97a5c2">floor 0</text>
+            <polyline points="50,40 90,70 130,100 170,130 210,150 250,150 290,150" fill="none" stroke="#ff6b6b" stroke-width="3"/>
+            <text x="50" y="30" font-size="11" fill="#ff6b6b">miss, miss, miss … −0.12 each</text>
+            <polyline points="290,150 320,134 350,118 380,102" fill="none" stroke="#3ddc97" stroke-width="3" stroke-dasharray="1 0"/>
+            <text x="262" y="95" font-size="11" fill="#3ddc97">only a taken ping gives +0.08</text>
+            <text x="262" y="176" font-size="11" fill="#97a5c2">no fade over time, no other recovery</text>
+          </svg>
+          <p class="small mute"><span class="chip c-fact">Fact (code)</span>4.2 also cut the recent-acceptance weight from 0.40 to 0.25, so rank alone may not explain the whole drop. <span class="chip c-inf">Inference</span></p>
+        </div>
+        <div class="card" style="margin-top:14px"><h3>Answer to the engineering manager's 14 Aug question</h3><p class="small mute">Did the change apply to responders already turning pings down? The weights are global, so it applied to everyone. Pre-4.2 decline history did not predict who lost pings. A reply to Marcus Oyelaran was drafted, not sent.</p></div>
+      </div>
+      <div class="prompt">
+        <div class="lab"><span>Prompt that produced it</span><span>Module 4 · #12 · exactly as typed</span></div>
+        <div class="txt">Find me the part of this code that takes points off somebody when they miss a ping or turn one down. Show it to me and explain it in plain English. Then find me every single thing in this code that puts points back on.</div>
+        <p class="small mute" style="margin-top:12px">Code read in full: <code>config.py</code>, <code>routing.py</code>, <code>offer.py</code>, <code>history.py</code>. Sending the offer, availability and travel time are empty placeholders, so delivery cannot be checked from code.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 10 MODULE 5 -->
+<section class="slide" id="s10">
+  <div class="wrap">
+    <div class="modhead"><div class="modnum">5</div><div><div class="modname">Module 5 · Super speed</div></div></div>
+    <h2>Helen asked what we'd build instead of quietly changing a number. We built it, clickable.</h2>
+    <div class="grid g2">
+      <div>
+        <div class="card">
+          <h3>Artifacts</h3>
+          <ul class="tight small">
+            <li><a href="05-super-speed/quiet-responders-brief.md">quiet-responders-brief.md</a>: one page, from the point of view of the person it happens to.</li>
+            <li><a href="05-super-speed/prototype.html">prototype.html</a>: lock-screen push with a 75s countdown, responder phone, handler phone app and web console, cartoon superhero avatars (cover names only).</li>
+          </ul>
+          <p class="small mute">Draft only. Marcus, Wen and Helen have not seen the prototype. Only Meteor Mite's 11 to 1 pings a week is real data; the rest is placeholder.</p>
+        </div>
+        <div class="card" style="margin-top:14px"><h3>Judgement calls along the way</h3><p class="small mute">Prompt #9 questioned "Can't go right now", since it would read as a turn-down. It became <b>snooze</b>: skipped for now, still in the queue. Prompts #5 and #6 asked for blind spots and what to propose instead.</p></div>
+      </div>
+      <div class="prompt">
+        <div class="lab"><span>Prompt that produced it</span><span>Module 5 · #8 · exactly as typed</span></div>
+        <div class="txt">Take the brief you just wrote and build me a working prototype, an actual screen I can click through, not a description of one. Save it as 05-super-speed/prototype.html, a single file I can just open in my browser. Show me where this would actually happen, and make at least one thing on it respond when I click it.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 THE FIX: PROTOTYPE -->
+<section class="slide" id="s11">
+  <div class="wrap">
+    <div class="kicker">The fix</div>
+    <h2>Try it: the same ping, seen by the person it happens to.</h2>
+    <p class="lead small" style="margin-bottom:12px">Start with "Send a ping" under the responder's phone, tap the notification on the lock screen, then watch the handler's view. Everything below is the live prototype, not a screenshot. Open it full size: <a href="05-super-speed/prototype.html">prototype.html</a></p>
+    <iframe class="proto-frame" title="Quiet responders prototype" sandbox="allow-scripts" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;title&gt;Rook Dispatch: quiet responders prototype&lt;/title&gt;
+&lt;style&gt;
+  :root { --ink:#1b2430; --mute:#667085; --line:#d9dee7; --bg:#f3f5f9; --accent:#2f5bd8; --good:#1f8a4c; --warn:#b7791f; --bad:#c0392b; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,Roboto,sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:14px 24px; background:#fff; border-bottom:1px solid var(--line); }
+  header h1 { font-size:16px; margin:0 0 2px; }
+  header p { margin:0; font-size:12px; color:var(--mute); }
+  .banner { background:#fff8e6; border-bottom:1px solid #f0dca8; color:#7a5a12; font-size:12px; padding:8px 24px; }
+  main { display:flex; flex-wrap:wrap; gap:36px; padding:24px; align-items:flex-start; justify-content:center; }
+  h2 { font-size:12px; text-transform:uppercase; letter-spacing:.08em; color:var(--mute); margin:0 0 10px; }
+  .col { display:flex; flex-direction:column; align-items:center; }
+  .col &gt; h2 { align-self:flex-start; }
+
+  .phone { width:320px; border:10px solid #222a36; border-radius:36px; background:#fff; overflow:hidden; box-shadow:0 8px 24px rgba(0,0,0,.15); }
+  .phone .status { height:28px; background:#222a36; color:#cbd3df; font-size:11px; display:flex; justify-content:space-between; align-items:center; padding:0 18px; }
+  .screen { min-height:540px; display:flex; flex-direction:column; }
+  .pad { padding:18px; flex:1; display:flex; flex-direction:column; }
+
+  /* lock screen */
+  .lock { background:linear-gradient(160deg,#1c2b4a,#0e1626 70%); color:#fff; min-height:540px; padding:44px 14px 14px; display:flex; flex-direction:column; }
+  .lock .date { text-align:center; font-size:14px; opacity:.8; }
+  .lock .clock { text-align:center; font-size:64px; font-weight:300; line-height:1.1; margin-bottom:28px; }
+  .notif { background:rgba(255,255,255,.18); backdrop-filter:blur(6px); border-radius:16px; padding:12px 14px; cursor:pointer; animation:slidein .45s ease-out; border:1px solid rgba(255,255,255,.2); }
+  .notif:hover { background:rgba(255,255,255,.26); }
+  .notif .top { display:flex; justify-content:space-between; font-size:11px; opacity:.85; text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
+  .notif b { display:block; font-size:15px; margin-bottom:2px; }
+  .notif .sub { font-size:13px; opacity:.9; }
+  .notif .left { margin-top:8px; font-size:12px; font-weight:600; color:#ffd479; }
+  .lock .hint { text-align:center; font-size:12px; opacity:.55; margin-top:auto; }
+  @keyframes slidein { from { transform:translateY(-30px); opacity:0; } to { transform:none; opacity:1; } }
+  .idle { text-align:center; opacity:.6; font-size:13px; margin-top:20px; }
+
+  /* app */
+  .tag { font-size:11px; font-weight:600; color:var(--accent); text-transform:uppercase; letter-spacing:.06em; }
+  .pad h3 { margin:4px 0 2px; font-size:20px; }
+  .meta { font-size:13px; color:var(--mute); margin:0 0 14px; }
+  .chips { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px; }
+  .chip { font-size:11px; padding:3px 8px; background:#eef1f7; border-radius:10px; }
+  .ring { position:relative; width:124px; height:124px; margin:2px auto 10px; }
+  .ring svg { transform:rotate(-90deg); }
+  .ring .num { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .ring .num b { font-size:32px; line-height:1; }
+  .ring .num span { font-size:11px; color:var(--mute); }
+  .reassure { font-size:12px; color:var(--mute); text-align:center; margin:0 0 12px; }
+  button { font:inherit; cursor:pointer; border-radius:10px; border:1px solid var(--line); background:#fff; padding:12px; font-size:15px; width:100%; }
+  button:hover { background:#f6f8fc; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; font-weight:600; }
+  button.primary:hover { background:#274cb8; }
+  .stack { display:flex; flex-direction:column; gap:8px; }
+  .cant { border-color:#9db4ee; color:var(--accent); font-weight:600; }
+  .cant small { display:block; font-weight:400; color:var(--mute); font-size:11px; margin-top:2px; }
+  .result { text-align:center; margin:auto 0; }
+  .result .icon { font-size:40px; }
+  .result h3 { margin:8px 0 6px; }
+  .result p { font-size:13px; color:var(--mute); margin:0 0 18px; }
+
+  .controls { margin-top:12px; width:320px; display:flex; gap:8px; flex-wrap:wrap; }
+  .controls button { font-size:12px; padding:7px; flex:1; color:var(--ink); }
+  .caption { width:320px; margin-top:8px; font-size:12px; color:var(--mute); min-height:34px; }
+
+  /* handler */
+  .tabs { display:flex; gap:0; margin-bottom:12px; align-self:flex-start; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .tabs button { width:auto; border:0; border-radius:0; padding:7px 14px; font-size:13px; background:#fff; }
+  .tabs button.on { background:#222a36; color:#fff; }
+  .happ { background:#f6f8fb; }
+  .happ .head { background:#fff; padding:14px 16px 10px; border-bottom:1px solid var(--line); }
+  .happ .head b { font-size:17px; }
+  .happ .head div { font-size:12px; color:var(--mute); }
+  .card { background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px; margin:10px 12px 0; }
+  .card.flagged { border-color:#f0cf8c; background:#fffaf0; }
+  .card.snoozed { border-color:#b8c9f5; background:#f5f8ff; }
+  .card .row1 { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .who { display:flex; align-items:center; gap:10px; }
+  .avatar { width:42px; height:42px; border-radius:50%; flex:none; }
+  .nums { font-size:13px; }
+  .nums .usual { color:var(--mute); }
+  .split { font-size:12px; color:#3b4656; margin-top:6px; display:flex; flex-wrap:wrap; gap:4px 12px; }
+  .why { font-size:12px; color:var(--mute); margin-top:6px; }
+  .flag, .ok, .snz { display:inline-block; font-size:11px; font-weight:600; padding:3px 8px; border-radius:10px; }
+  .flag { background:#fdeccb; color:#8a5a0c; }
+  .ok { background:#dcf2e4; color:#17673a; }
+  .snz { background:#dbe5ff; color:#2a4aa8; }
+  .recent { padding:14px 16px; }
+  .recent h2 { margin-bottom:6px; }
+  .recent ul { list-style:none; margin:0; padding:0; font-size:12px; }
+  .recent li { padding:6px 0; border-bottom:1px solid #e6eaf0; display:flex; gap:8px; }
+  .recent time { color:var(--mute); min-width:46px; }
+  .empty { color:var(--mute); }
+  .pulse { animation:pulse 1.2s ease-out 1; }
+  @keyframes pulse { 0% { background:#ffe8a8; } 100% { background:transparent; } }
+
+  .console { width:640px; max-width:100%; background:#fff; border:1px solid var(--line); border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+  .console .bar { background:#222a36; color:#fff; padding:10px 16px; display:flex; justify-content:space-between; font-size:13px; }
+  .console .body { padding:16px; }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th { text-align:left; font-size:11px; color:var(--mute); text-transform:uppercase; letter-spacing:.05em; padding:6px 8px; border-bottom:1px solid var(--line); }
+  td { padding:10px 8px; border-bottom:1px solid #eef1f5; vertical-align:top; }
+  tr.flagged { background:#fff9ec; }
+  tr.snoozed { background:#f5f8ff; }
+  .console .feed { margin-top:18px; }
+  .note { font-size:11px; color:var(--mute); margin-top:12px; max-width:640px; }
+  .hidden { display:none !important; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;header&gt;
+  &lt;h1&gt;Rook Dispatch: quiet responders (prototype)&lt;/h1&gt;
+  &lt;p&gt;Stage 1 of the brief in 05-super-speed/quiet-responders-brief.md. Start with &quot;Send a ping&quot; under the responder&#x27;s phone, open it from the lock screen, and watch the handler&#x27;s view.&lt;/p&gt;
+&lt;/header&gt;
+&lt;div class=&quot;banner&quot;&gt;Sample screens, not live data. Meteor Mite&#x27;s 11 pings a week falling to 1 comes from our September analysis; every other number is a placeholder. The 30-minute snooze is a placeholder length. Cover names only, as in all Rook data. The handler phone app is a Q4 exploration, not committed.&lt;/div&gt;
+
+&lt;main&gt;
+  &lt;section class=&quot;col&quot;&gt;
+    &lt;h2&gt;Responder phone: Meteor Mite&lt;/h2&gt;
+    &lt;div class=&quot;phone&quot;&gt;
+      &lt;div class=&quot;status&quot;&gt;&lt;span id=&quot;clockbar&quot;&gt;9:41&lt;/span&gt;&lt;span&gt;Rook&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;screen&quot; id=&quot;screen&quot;&gt;&lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;controls&quot;&gt;
+      &lt;button id=&quot;send&quot;&gt;Send a ping&lt;/button&gt;
+      &lt;button id=&quot;endsnooze&quot;&gt;End snooze&lt;/button&gt;
+      &lt;button id=&quot;skipbtn&quot;&gt;Skip ahead 60s&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;caption&quot; id=&quot;caption&quot;&gt;Phone is locked and quiet. Click &quot;Send a ping&quot; to push a callout.&lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;section class=&quot;col&quot;&gt;
+    &lt;h2&gt;Handler: Kip&lt;/h2&gt;
+    &lt;div class=&quot;tabs&quot;&gt;
+      &lt;button id=&quot;tab-phone&quot; class=&quot;on&quot;&gt;Phone app&lt;/button&gt;
+      &lt;button id=&quot;tab-console&quot;&gt;Web console&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;view-phone&quot; class=&quot;phone&quot;&gt;
+      &lt;div class=&quot;status&quot;&gt;&lt;span id=&quot;clockbar2&quot;&gt;9:41&lt;/span&gt;&lt;span&gt;Rook Handler&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;screen happ&quot;&gt;
+        &lt;div class=&quot;head&quot;&gt;&lt;b&gt;My responders&lt;/b&gt;&lt;div&gt;Status this week&lt;/div&gt;&lt;/div&gt;
+        &lt;div id=&quot;cards&quot;&gt;&lt;/div&gt;
+        &lt;div class=&quot;recent&quot;&gt;&lt;h2&gt;Recent&lt;/h2&gt;&lt;ul id=&quot;feed-phone&quot;&gt;&lt;li class=&quot;empty&quot;&gt;Nothing yet.&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div id=&quot;view-console&quot; class=&quot;console hidden&quot;&gt;
+      &lt;div class=&quot;bar&quot;&gt;&lt;span&gt;Dispatch console · Responders&lt;/span&gt;&lt;span&gt;Handler: Kip&lt;/span&gt;&lt;/div&gt;
+      &lt;div class=&quot;body&quot;&gt;
+        &lt;table&gt;
+          &lt;thead&gt;&lt;tr&gt;&lt;th&gt;Responder&lt;/th&gt;&lt;th&gt;Pings this week&lt;/th&gt;&lt;th&gt;What happened&lt;/th&gt;&lt;th&gt;Status&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;
+          &lt;tbody id=&quot;rows&quot;&gt;&lt;/tbody&gt;
+        &lt;/table&gt;
+        &lt;div class=&quot;feed recent&quot; style=&quot;padding:14px 0 0&quot;&gt;&lt;h2&gt;Activity&lt;/h2&gt;&lt;ul id=&quot;feed-console&quot;&gt;&lt;li class=&quot;empty&quot;&gt;Nothing yet.&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;p class=&quot;note&quot;&gt;A flag shows when a responder is offered much less than usual. Missed pings and snoozes do not lower rank; a plain turn-down still does. The threshold for &quot;quiet&quot; is not set yet.&lt;/p&gt;
+  &lt;/section&gt;
+&lt;/main&gt;
+
+&lt;script&gt;
+(function () {
+  var TOTAL = 75, SNOOZE_MIN = 30;
+  var left = TOTAL, timer = null;
+  var state = &#x27;idle&#x27;;                 // idle | lock | app | result
+  var resultKind = null;
+  var counts = { taken:0, down:0, miss:1, snooze:0 };
+  var snoozedUntil = null;
+  var lastKind = &#x27;miss&#x27;;
+  var feedItems = [];
+
+  var $ = function (id) { return document.getElementById(id); };
+  function clock(d) { return d.toLocaleTimeString([], { hour:&#x27;numeric&#x27;, minute:&#x27;2-digit&#x27; }); }
+  function setCaption(t) { $(&#x27;caption&#x27;).textContent = t; }
+
+  /* ---------- responder phone ---------- */
+  function ring() {
+    var r = 54, c = 2 * Math.PI * r;
+    return &#x27;&lt;div class=&quot;ring&quot;&gt;&lt;svg width=&quot;124&quot; height=&quot;124&quot;&gt;&#x27; +
+      &#x27;&lt;circle cx=&quot;62&quot; cy=&quot;62&quot; r=&quot;&#x27; + r + &#x27;&quot; fill=&quot;none&quot; stroke=&quot;#e6eaf2&quot; stroke-width=&quot;9&quot;/&gt;&#x27; +
+      &#x27;&lt;circle id=&quot;arc&quot; cx=&quot;62&quot; cy=&quot;62&quot; r=&quot;&#x27; + r + &#x27;&quot; fill=&quot;none&quot; stroke=&quot;#2f5bd8&quot; stroke-width=&quot;9&quot; stroke-linecap=&quot;round&quot; stroke-dasharray=&quot;&#x27; + c + &#x27;&quot; stroke-dashoffset=&quot;0&quot;/&gt;&#x27; +
+      &#x27;&lt;/svg&gt;&lt;div class=&quot;num&quot;&gt;&lt;b id=&quot;secs&quot;&gt;&#x27; + left + &#x27;&lt;/b&gt;&lt;span&gt;seconds left&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&#x27;;
+  }
+
+  function render() {
+    var scr = $(&#x27;screen&#x27;);
+    var d = new Date();
+    if (state === &#x27;idle&#x27; || state === &#x27;lock&#x27;) {
+      var n = &#x27;&#x27;;
+      if (state === &#x27;lock&#x27;) {
+        n = &#x27;&lt;div class=&quot;notif&quot; id=&quot;notif&quot;&gt;&lt;div class=&quot;top&quot;&gt;&lt;span&gt;Rook Dispatch&lt;/span&gt;&lt;span&gt;now&lt;/span&gt;&lt;/div&gt;&#x27; +
+            &#x27;&lt;b&gt;New callout: Uptown, structural collapse&lt;/b&gt;&#x27; +
+            &#x27;&lt;div class=&quot;sub&quot;&gt;Your home area · structural-entry, flight&lt;/div&gt;&#x27; +
+            &#x27;&lt;div class=&quot;left&quot; id=&quot;lockleft&quot;&gt;&#x27; + left + &#x27;s left to answer&lt;/div&gt;&lt;/div&gt;&#x27;;
+      } else {
+        n = &#x27;&lt;div class=&quot;idle&quot;&gt;No notifications&lt;/div&gt;&#x27;;
+      }
+      scr.innerHTML = &#x27;&lt;div class=&quot;lock&quot;&gt;&lt;div class=&quot;date&quot;&gt;&#x27; + d.toLocaleDateString([], { weekday:&#x27;long&#x27;, month:&#x27;long&#x27;, day:&#x27;numeric&#x27; }) + &#x27;&lt;/div&gt;&#x27; +
+        &#x27;&lt;div class=&quot;clock&quot;&gt;&#x27; + clock(d).replace(&#x27; &#x27;, &#x27;&#x27;) + &#x27;&lt;/div&gt;&#x27; + n +
+        &#x27;&lt;div class=&quot;hint&quot;&gt;&#x27; + (state === &#x27;lock&#x27; ? &#x27;Tap the notification to open&#x27; : &#x27;&#x27;) + &#x27;&lt;/div&gt;&lt;/div&gt;&#x27;;
+    } else if (state === &#x27;app&#x27;) {
+      scr.innerHTML = &#x27;&lt;div class=&quot;pad&quot;&gt;&lt;div class=&quot;tag&quot;&gt;New callout&lt;/div&gt;&lt;h3&gt;Uptown, structural collapse&lt;/h3&gt;&#x27; +
+        &#x27;&lt;p class=&quot;meta&quot;&gt;Your home area · 6 min away&lt;/p&gt;&#x27; +
+        &#x27;&lt;div class=&quot;chips&quot;&gt;&lt;span class=&quot;chip&quot;&gt;structural-entry&lt;/span&gt;&lt;span class=&quot;chip&quot;&gt;flight&lt;/span&gt;&lt;/div&gt;&#x27; + ring() +
+        &#x27;&lt;p class=&quot;reassure&quot;&gt;The clock started when the alert landed. If it runs out, it goes to the next responder and does not count against your rank.&lt;/p&gt;&#x27; +
+        &#x27;&lt;div class=&quot;stack&quot;&gt;&lt;button class=&quot;primary&quot; data-act=&quot;taken&quot;&gt;Take it&lt;/button&gt;&#x27; +
+        &#x27;&lt;button class=&quot;cant&quot; data-act=&quot;snooze&quot;&gt;Not now: snooze &#x27; + SNOOZE_MIN + &#x27; min&lt;small&gt;Skip me for &#x27; + SNOOZE_MIN + &#x27; minutes, then I\&#x27;m back in the queue. No effect on rank.&lt;/small&gt;&lt;/button&gt;&#x27; +
+        &#x27;&lt;button data-act=&quot;down&quot;&gt;Turn down&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&#x27;;
+    } else if (state === &#x27;result&#x27;) {
+      var m = messages[resultKind];
+      scr.innerHTML = &#x27;&lt;div class=&quot;pad&quot;&gt;&lt;div class=&quot;result&quot;&gt;&lt;div class=&quot;icon&quot;&gt;&#x27; + m[0] + &#x27;&lt;/div&gt;&lt;h3&gt;&#x27; + m[1] + &#x27;&lt;/h3&gt;&lt;p&gt;&#x27; + m[2] + &#x27;&lt;/p&gt;&#x27; +
+        &#x27;&lt;button class=&quot;primary&quot; data-act=&quot;home&quot;&gt;Done&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;&#x27;;
+    }
+    paint();
+  }
+
+  function paint() {
+    var s = $(&#x27;secs&#x27;), a = $(&#x27;arc&#x27;), l = $(&#x27;lockleft&#x27;);
+    if (s &amp;&amp; a) {
+      s.textContent = left;
+      var c = 2 * Math.PI * 54;
+      a.setAttribute(&#x27;stroke-dashoffset&#x27;, c * (1 - left / TOTAL));
+      a.setAttribute(&#x27;stroke&#x27;, left &lt;= 15 ? &#x27;#c0392b&#x27; : &#x27;#2f5bd8&#x27;);
+    }
+    if (l) l.textContent = left + &#x27;s left to answer&#x27;;
+  }
+
+  function tick() {
+    left -= 1;
+    if (left &lt;= 0) { left = 0; finish(&#x27;miss&#x27;); return; }
+    paint();
+  }
+
+  var messages = {
+    taken:  [&#x27;✅&#x27;, &#x27;It\&#x27;s yours&#x27;, &#x27;Callout taken. Directions are on their way.&#x27;, &#x27;Taken. Raises rank.&#x27;],
+    snooze: [&#x27;💤&#x27;, &#x27;Snoozed&#x27;, &#x27;&#x27;, &#x27;Snoozed. Not offered callouts for &#x27; + SNOOZE_MIN + &#x27; min. No effect on rank.&#x27;],
+    down:   [&#x27;↩️&#x27;, &#x27;Turned down&#x27;, &#x27;Passed to the next responder. A turn-down lowers your rank a little, so use snooze if you just need a break.&#x27;, &#x27;Turned down. Lowers rank slightly.&#x27;],
+    miss:   [&#x27;⏱️&#x27;, &#x27;Time ran out&#x27;, &#x27;It went to the next responder. A missed ping does not count against you.&#x27;, &#x27;Missed. No effect on rank.&#x27;]
+  };
+
+  function finish(kind) {
+    clearInterval(timer);
+    var map = { taken:&#x27;taken&#x27;, snooze:&#x27;snooze&#x27;, down:&#x27;down&#x27;, miss:&#x27;miss&#x27; };
+    counts[map[kind]] += 1;
+    lastKind = kind;
+    if (kind === &#x27;snooze&#x27;) {
+      snoozedUntil = new Date(Date.now() + SNOOZE_MIN * 60000);
+      messages.snooze[2] = &#x27;You\&#x27;re paused until &#x27; + clock(snoozedUntil) + &#x27;, then back in the queue automatically. This will not count against you.&#x27;;
+    }
+    resultKind = kind;
+    state = &#x27;result&#x27;;
+    addFeed(messages[kind][3]);
+    render();
+    renderHandler(true);
+    setCaption(&#x27;Handler view updated. Send another ping to keep going.&#x27;);
+  }
+
+  $(&#x27;screen&#x27;).addEventListener(&#x27;click&#x27;, function (e) {
+    if (state === &#x27;lock&#x27; &amp;&amp; e.target.closest(&#x27;#notif&#x27;)) { state = &#x27;app&#x27;; render(); setCaption(&#x27;Opened from the lock screen. The clock kept running while the phone was locked.&#x27;); return; }
+    var b = e.target.closest(&#x27;button&#x27;);
+    if (!b) return;
+    var act = b.getAttribute(&#x27;data-act&#x27;);
+    if (act === &#x27;home&#x27;) { state = &#x27;idle&#x27;; render(); setCaption(&#x27;Phone is locked and quiet. Click &quot;Send a ping&quot; to push another.&#x27;); }
+    else if (act) finish(act);
+  });
+
+  $(&#x27;send&#x27;).addEventListener(&#x27;click&#x27;, function () {
+    if (state === &#x27;lock&#x27; || state === &#x27;app&#x27;) return;
+    if (snoozedUntil &amp;&amp; Date.now() &lt; snoozedUntil.getTime()) {
+      setCaption(&#x27;Not sent: Meteor Mite is snoozed until &#x27; + clock(snoozedUntil) + &#x27;. Snoozed responders are skipped. Click &quot;End snooze&quot; to see them back in the queue.&#x27;);
+      return;
+    }
+    left = TOTAL; state = &#x27;lock&#x27;; render();
+    clearInterval(timer); timer = setInterval(tick, 1000);
+    setCaption(&#x27;Push alert landed on the lock screen. The 75-second clock is already running. Tap the notification.&#x27;);
+  });
+
+  $(&#x27;endsnooze&#x27;).addEventListener(&#x27;click&#x27;, function () {
+    if (!snoozedUntil) { setCaption(&#x27;No snooze active.&#x27;); return; }
+    snoozedUntil = null;
+    addFeed(&#x27;Snooze ended. Back in the queue.&#x27;);
+    renderHandler(true);
+    setCaption(&#x27;Snooze ended. Meteor Mite is back in the queue.&#x27;);
+  });
+
+  $(&#x27;skipbtn&#x27;).addEventListener(&#x27;click&#x27;, function () {
+    if (state === &#x27;lock&#x27; || state === &#x27;app&#x27;) { left = Math.max(1, left - 60); paint(); }
+  });
+
+  /* ---------- handler ---------- */
+  function addFeed(text) {
+    feedItems.unshift({ t: clock(new Date()), text: text });
+  }
+
+  function status() {
+    var total = counts.taken + counts.down + counts.miss + counts.snooze;
+    if (snoozedUntil &amp;&amp; Date.now() &lt; snoozedUntil.getTime()) {
+      return { cls:&#x27;snoozed&#x27;, chip:&#x27;&lt;span class=&quot;snz&quot;&gt;Snoozed&lt;/span&gt;&#x27;, total:total,
+        why:&#x27;Paused by the responder until &#x27; + clock(snoozedUntil) + &#x27;. Not being offered callouts meanwhile, and rank is unaffected.&#x27; };
+    }
+    if (counts.taken &gt; 0) {
+      return { cls:&#x27;&#x27;, chip:&#x27;&lt;span class=&quot;ok&quot;&gt;Back in rotation&lt;/span&gt;&#x27;, total:total,
+        why:&#x27;Took a ping this week. Still well under the usual 11, so keep watching.&#x27; };
+    }
+    var why = &#x27;Offered far less than usual, and the one ping this week was missed. Not counted against rank.&#x27;;
+    if (lastKind === &#x27;down&#x27;) why = &#x27;Offered far less than usual. A plain turn-down lowers rank slightly.&#x27;;
+    else if (lastKind === &#x27;miss&#x27; &amp;&amp; total &gt; 1) why = &#x27;Offered far less than usual, and recent pings were missed. Not counted against rank.&#x27;;
+    else if (lastKind === &#x27;snooze&#x27;) why = &#x27;Snooze ended. Offered far less than usual; rank unaffected.&#x27;;
+    return { cls:&#x27;flagged&#x27;, chip:&#x27;&lt;span class=&quot;flag&quot;&gt;Gone quiet&lt;/span&gt;&#x27;, total:total, why:why };
+  }
+
+  function splitHTML() {
+    return &#x27;&lt;span&gt;Taken &lt;b&gt;&#x27; + counts.taken + &#x27;&lt;/b&gt;&lt;/span&gt;&lt;span&gt;Turned down &lt;b&gt;&#x27; + counts.down + &#x27;&lt;/b&gt;&lt;/span&gt;&#x27; +
+           &#x27;&lt;span&gt;Missed &lt;b&gt;&#x27; + counts.miss + &#x27;&lt;/b&gt;&lt;/span&gt;&lt;span&gt;Snoozed &lt;b&gt;&#x27; + counts.snooze + &#x27;&lt;/b&gt;&lt;/span&gt;&#x27;;
+  }
+
+  function feedHTML() {
+    if (!feedItems.length) return &#x27;&lt;li class=&quot;empty&quot;&gt;Nothing yet.&lt;/li&gt;&#x27;;
+    return feedItems.map(function (f, i) {
+      return &#x27;&lt;li&#x27; + (i === 0 ? &#x27; class=&quot;pulse&quot;&#x27; : &#x27;&#x27;) + &#x27;&gt;&lt;time&gt;&#x27; + f.t + &#x27;&lt;/time&gt;&lt;span&gt;&lt;b&gt;Meteor Mite&lt;/b&gt;: &#x27; + f.text + &#x27;&lt;/span&gt;&lt;/li&gt;&#x27;;
+    }).join(&#x27;&#x27;);
+  }
+
+  function renderHandler(pulse) {
+    var s = status();
+    $(&#x27;cards&#x27;).innerHTML =
+      &#x27;&lt;div class=&quot;card &#x27; + s.cls + (pulse ? &#x27; pulse&#x27; : &#x27;&#x27;) + &#x27;&quot;&gt;&lt;div class=&quot;row1&quot;&gt;&lt;div class=&quot;who&quot;&gt;&lt;svg class=&quot;avatar&quot; viewBox=&quot;0 0 40 40&quot; aria-label=&quot;Meteor Mite avatar&quot;&gt;&lt;circle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;20&quot; fill=&quot;#6b5bd2&quot;/&gt;&lt;path d=&quot;M20 2 L24 10 L29 6 L27 14 H13 L11 6 L16 10 Z&quot; fill=&quot;#ff9f1c&quot;/&gt;&lt;ellipse cx=&quot;20&quot; cy=&quot;23&quot; rx=&quot;10&quot; ry=&quot;11&quot; fill=&quot;#f3c9a0&quot;/&gt;&lt;path d=&quot;M9 14 Q20 8 31 14 L31 20 Q20 17 9 20 Z&quot; fill=&quot;#2b2350&quot;/&gt;&lt;ellipse cx=&quot;15.5&quot; cy=&quot;17&quot; rx=&quot;3&quot; ry=&quot;2&quot; fill=&quot;#fff&quot;/&gt;&lt;ellipse cx=&quot;24.5&quot; cy=&quot;17&quot; rx=&quot;3&quot; ry=&quot;2&quot; fill=&quot;#fff&quot;/&gt;&lt;circle cx=&quot;16&quot; cy=&quot;17&quot; r=&quot;1&quot; fill=&quot;#2b2350&quot;/&gt;&lt;circle cx=&quot;25&quot; cy=&quot;17&quot; r=&quot;1&quot; fill=&quot;#2b2350&quot;/&gt;&lt;path d=&quot;M15 27 Q20 32 25 27&quot; stroke=&quot;#8a4b2a&quot; stroke-width=&quot;1.6&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;path d=&quot;M5 40 Q20 30 35 40 Z&quot; fill=&quot;#e63946&quot;/&gt;&lt;/svg&gt;&lt;b&gt;Meteor Mite&lt;/b&gt;&lt;/div&gt;&#x27; + s.chip + &#x27;&lt;/div&gt;&#x27; +
+      &#x27;&lt;div class=&quot;nums&quot;&gt;&#x27; + s.total + &#x27; pings &lt;span class=&quot;usual&quot;&gt;(usual 11)&lt;/span&gt;&lt;/div&gt;&#x27; +
+      &#x27;&lt;div class=&quot;split&quot;&gt;&#x27; + splitHTML() + &#x27;&lt;/div&gt;&lt;div class=&quot;why&quot;&gt;&#x27; + s.why + &#x27;&lt;/div&gt;&lt;/div&gt;&#x27; +
+      &#x27;&lt;div class=&quot;card&quot;&gt;&lt;div class=&quot;row1&quot;&gt;&lt;div class=&quot;who&quot;&gt;&lt;svg class=&quot;avatar&quot; viewBox=&quot;0 0 40 40&quot; aria-label=&quot;The Gale avatar&quot;&gt;&lt;circle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;20&quot; fill=&quot;#2a8f8f&quot;/&gt;&lt;path d=&quot;M8 16 Q10 4 22 5 Q32 6 31 14 Q26 8 18 10 Q12 11 8 16 Z&quot; fill=&quot;#e8f7f7&quot;/&gt;&lt;path d=&quot;M30 9 Q36 9 34 14 Q32 12 30 13&quot; stroke=&quot;#e8f7f7&quot; stroke-width=&quot;2&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;ellipse cx=&quot;20&quot; cy=&quot;23&quot; rx=&quot;10&quot; ry=&quot;11&quot; fill=&quot;#d9a577&quot;/&gt;&lt;rect x=&quot;9&quot; y=&quot;14&quot; width=&quot;22&quot; height=&quot;7&quot; rx=&quot;3.5&quot; fill=&quot;#1d4f4f&quot;/&gt;&lt;circle cx=&quot;15&quot; cy=&quot;17.5&quot; r=&quot;3&quot; fill=&quot;#bff3ff&quot;/&gt;&lt;circle cx=&quot;25&quot; cy=&quot;17.5&quot; r=&quot;3&quot; fill=&quot;#bff3ff&quot;/&gt;&lt;circle cx=&quot;15.8&quot; cy=&quot;17&quot; r=&quot;1&quot; fill=&quot;#fff&quot;/&gt;&lt;circle cx=&quot;25.8&quot; cy=&quot;17&quot; r=&quot;1&quot; fill=&quot;#fff&quot;/&gt;&lt;path d=&quot;M16 28 Q20 31 24 28&quot; stroke=&quot;#6b3d1f&quot; stroke-width=&quot;1.6&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;path d=&quot;M6 40 Q20 31 34 40 Z&quot; fill=&quot;#fff&quot;/&gt;&lt;/svg&gt;&lt;b&gt;The Gale&lt;/b&gt;&lt;/div&gt;&lt;span class=&quot;ok&quot;&gt;Normal&lt;/span&gt;&lt;/div&gt;&#x27; +
+      &#x27;&lt;div class=&quot;nums&quot;&gt;9 pings &lt;span class=&quot;usual&quot;&gt;(usual 9)&lt;/span&gt;&lt;/div&gt;&#x27; +
+      &#x27;&lt;div class=&quot;split&quot;&gt;&lt;span&gt;Taken &lt;b&gt;6&lt;/b&gt;&lt;/span&gt;&lt;span&gt;Turned down &lt;b&gt;1&lt;/b&gt;&lt;/span&gt;&lt;span&gt;Missed &lt;b&gt;1&lt;/b&gt;&lt;/span&gt;&lt;span&gt;Snoozed &lt;b&gt;1&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&#x27;;
+    $(&#x27;rows&#x27;).innerHTML =
+      &#x27;&lt;tr class=&quot;&#x27; + s.cls + &#x27;&quot;&gt;&lt;td&gt;&lt;div class=&quot;who&quot;&gt;&lt;svg class=&quot;avatar&quot; viewBox=&quot;0 0 40 40&quot; aria-label=&quot;Meteor Mite avatar&quot;&gt;&lt;circle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;20&quot; fill=&quot;#6b5bd2&quot;/&gt;&lt;path d=&quot;M20 2 L24 10 L29 6 L27 14 H13 L11 6 L16 10 Z&quot; fill=&quot;#ff9f1c&quot;/&gt;&lt;ellipse cx=&quot;20&quot; cy=&quot;23&quot; rx=&quot;10&quot; ry=&quot;11&quot; fill=&quot;#f3c9a0&quot;/&gt;&lt;path d=&quot;M9 14 Q20 8 31 14 L31 20 Q20 17 9 20 Z&quot; fill=&quot;#2b2350&quot;/&gt;&lt;ellipse cx=&quot;15.5&quot; cy=&quot;17&quot; rx=&quot;3&quot; ry=&quot;2&quot; fill=&quot;#fff&quot;/&gt;&lt;ellipse cx=&quot;24.5&quot; cy=&quot;17&quot; rx=&quot;3&quot; ry=&quot;2&quot; fill=&quot;#fff&quot;/&gt;&lt;circle cx=&quot;16&quot; cy=&quot;17&quot; r=&quot;1&quot; fill=&quot;#2b2350&quot;/&gt;&lt;circle cx=&quot;25&quot; cy=&quot;17&quot; r=&quot;1&quot; fill=&quot;#2b2350&quot;/&gt;&lt;path d=&quot;M15 27 Q20 32 25 27&quot; stroke=&quot;#8a4b2a&quot; stroke-width=&quot;1.6&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;path d=&quot;M5 40 Q20 30 35 40 Z&quot; fill=&quot;#e63946&quot;/&gt;&lt;/svg&gt;&lt;b&gt;Meteor Mite&lt;/b&gt;&lt;/div&gt;&lt;/td&gt;&lt;td&gt;&#x27; + s.total + &#x27; &lt;span style=&quot;color:var(--mute)&quot;&gt;(usual 11)&lt;/span&gt;&lt;/td&gt;&#x27; +
+      &#x27;&lt;td&gt;&lt;div class=&quot;split&quot; style=&quot;margin:0&quot;&gt;&#x27; + splitHTML() + &#x27;&lt;/div&gt;&lt;/td&gt;&lt;td&gt;&#x27; + s.chip + &#x27;&lt;div class=&quot;why&quot;&gt;&#x27; + s.why + &#x27;&lt;/div&gt;&lt;/td&gt;&lt;/tr&gt;&#x27; +
+      &#x27;&lt;tr&gt;&lt;td&gt;&lt;div class=&quot;who&quot;&gt;&lt;svg class=&quot;avatar&quot; viewBox=&quot;0 0 40 40&quot; aria-label=&quot;The Gale avatar&quot;&gt;&lt;circle cx=&quot;20&quot; cy=&quot;20&quot; r=&quot;20&quot; fill=&quot;#2a8f8f&quot;/&gt;&lt;path d=&quot;M8 16 Q10 4 22 5 Q32 6 31 14 Q26 8 18 10 Q12 11 8 16 Z&quot; fill=&quot;#e8f7f7&quot;/&gt;&lt;path d=&quot;M30 9 Q36 9 34 14 Q32 12 30 13&quot; stroke=&quot;#e8f7f7&quot; stroke-width=&quot;2&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;ellipse cx=&quot;20&quot; cy=&quot;23&quot; rx=&quot;10&quot; ry=&quot;11&quot; fill=&quot;#d9a577&quot;/&gt;&lt;rect x=&quot;9&quot; y=&quot;14&quot; width=&quot;22&quot; height=&quot;7&quot; rx=&quot;3.5&quot; fill=&quot;#1d4f4f&quot;/&gt;&lt;circle cx=&quot;15&quot; cy=&quot;17.5&quot; r=&quot;3&quot; fill=&quot;#bff3ff&quot;/&gt;&lt;circle cx=&quot;25&quot; cy=&quot;17.5&quot; r=&quot;3&quot; fill=&quot;#bff3ff&quot;/&gt;&lt;circle cx=&quot;15.8&quot; cy=&quot;17&quot; r=&quot;1&quot; fill=&quot;#fff&quot;/&gt;&lt;circle cx=&quot;25.8&quot; cy=&quot;17&quot; r=&quot;1&quot; fill=&quot;#fff&quot;/&gt;&lt;path d=&quot;M16 28 Q20 31 24 28&quot; stroke=&quot;#6b3d1f&quot; stroke-width=&quot;1.6&quot; fill=&quot;none&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;path d=&quot;M6 40 Q20 31 34 40 Z&quot; fill=&quot;#fff&quot;/&gt;&lt;/svg&gt;&lt;b&gt;The Gale&lt;/b&gt;&lt;/div&gt;&lt;/td&gt;&lt;td&gt;9 &lt;span style=&quot;color:var(--mute)&quot;&gt;(usual 9)&lt;/span&gt;&lt;/td&gt;&#x27; +
+      &#x27;&lt;td&gt;&lt;div class=&quot;split&quot; style=&quot;margin:0&quot;&gt;&lt;span&gt;Taken &lt;b&gt;6&lt;/b&gt;&lt;/span&gt;&lt;span&gt;Turned down &lt;b&gt;1&lt;/b&gt;&lt;/span&gt;&lt;span&gt;Missed &lt;b&gt;1&lt;/b&gt;&lt;/span&gt;&lt;span&gt;Snoozed &lt;b&gt;1&lt;/b&gt;&lt;/span&gt;&lt;/div&gt;&lt;/td&gt;&lt;td&gt;&lt;span class=&quot;ok&quot;&gt;Normal&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;&#x27;;
+    $(&#x27;feed-phone&#x27;).innerHTML = feedHTML();
+    $(&#x27;feed-console&#x27;).innerHTML = feedHTML();
+  }
+
+  $(&#x27;tab-phone&#x27;).addEventListener(&#x27;click&#x27;, function () {
+    $(&#x27;view-phone&#x27;).classList.remove(&#x27;hidden&#x27;); $(&#x27;view-console&#x27;).classList.add(&#x27;hidden&#x27;);
+    $(&#x27;tab-phone&#x27;).classList.add(&#x27;on&#x27;); $(&#x27;tab-console&#x27;).classList.remove(&#x27;on&#x27;);
+  });
+  $(&#x27;tab-console&#x27;).addEventListener(&#x27;click&#x27;, function () {
+    $(&#x27;view-console&#x27;).classList.remove(&#x27;hidden&#x27;); $(&#x27;view-phone&#x27;).classList.add(&#x27;hidden&#x27;);
+    $(&#x27;tab-console&#x27;).classList.add(&#x27;on&#x27;); $(&#x27;tab-phone&#x27;).classList.remove(&#x27;on&#x27;);
+  });
+
+  var t0 = clock(new Date());
+  $(&#x27;clockbar&#x27;).textContent = t0; $(&#x27;clockbar2&#x27;).textContent = t0;
+  render();
+  renderHandler(false);
+})();
+&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
+    <div class="grid g4" style="margin-top:16px">
+      <div class="card"><h3>1. A miss stops costing rank</h3><p class="small mute">A turn-down keeps its penalty.</p></div>
+      <div class="card"><h3>2. 75s, with a countdown</h3><p class="small mute">Between today's 60s and the old 90s.</p></div>
+      <div class="card"><h3>3. One-time rank restore</h3><p class="small mute">Everyone returns to a neutral value. Also wipes good history.</p></div>
+      <div class="card"><h3>4. "Gone quiet" flag + snooze</h3><p class="small mute">Read-only for handlers. Snooze keeps you in the queue.</p></div>
+    </div>
+    <p class="small mute" style="margin-top:12px">Optional, Helen's call: a dead-phone guard that skips a responder after about 3 misses in a row. Stage 2, after 2 to 3 weeks of data: recent acceptance weight 0.25 to 0.35, proximity held at 0.60.</p>
+  </div>
+</section>
+
+<!-- 12 MODULE 6 -->
+<section class="slide" id="s12">
+  <div class="wrap">
+    <div class="modhead"><div class="modnum">6</div><div><div class="modname">Module 6 · Sidekicks</div></div></div>
+    <h2>The review-checklist skill runs the same four checks on every brief, every Monday.</h2>
+    <div class="grid g2">
+      <div>
+        <div class="card">
+          <h3>Result on this brief (quiet-responders-brief.md)</h3>
+          <div class="check" style="margin:10px 0"><span class="badge b-part">PARTIAL</span><div><b>Owner.</b> <span class="small mute">Header says "Dispatch PM", a role, not a name. No owner for Stage 1 or 2.</span></div></div>
+          <div class="check" style="margin:10px 0"><span class="badge b-part">PARTIAL</span><div><b>Success measure.</b> <span class="small mute">Metrics have baselines, but "no targets set yet".</span></div></div>
+          <div class="check" style="margin:10px 0"><span class="badge b-part">PARTIAL</span><div><b>Scope matches.</b> <span class="small mute">Wait change and Stage 2 weights aren't set up in the problem; dead-phone guard sits oddly with "does not fix delivery".</span></div></div>
+          <div class="check" style="margin:10px 0"><span class="badge b-pass">PASS</span><div><b>Problem before fix.</b> <span class="small mute">Problem and evidence come first, with unknowns stated.</span></div></div>
+          <p style="margin-top:10px"><span class="chip c-open">Verdict: fix first</span></p>
+        </div>
+      </div>
+      <div>
+        <div class="prompt">
+          <div class="lab"><span>Prompt that produced it</span><span>Module 6 · #1 · exactly as typed</span></div>
+          <div class="txt">I want to save a habit as something I can reuse. When I review a brief before it goes any further, here's what I actually check for: - It names who owns it - It says how we'll know it worked - The scope at the end matches the scope at the start - It explains the problem before it proposes a fix Turn that into a skill called review-checklist, so I can point it at any brief and get the same check every time, without me explaining it again.</div>
+        </div>
+        <div class="card" style="margin-top:14px"><h3>Scheduled</h3><p class="small mute">Task <code>monday-review-checklist</code> runs Mondays about 9:06 AM local, first run 19 Oct 2026, read-only on briefs in this folder. It runs only while the app is open.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 13 PREVENTION -->
+<section class="slide" id="s13">
+  <div class="wrap">
+    <div class="kicker">How the skill keeps this from happening again</div>
+    <h2>Each check maps to something that went wrong around 4.2.</h2>
+    <div class="grid g2">
+      <div class="card"><div class="check"><span class="badge b-part">OWNER</span><div><p><b>Every roadmap row was owned by Priya, who has left.</b> Availability Confidence and Ping timeout tuning were committed for 4.2, never shipped, and nobody was asked.</p><p class="small mute">Fact (Q3 roadmap). The check forces a named owner before a brief moves on.</p></div></div></div>
+      <div class="card"><div class="check"><span class="badge b-part">MEASURE</span><div><p><b>"Ping timeout tuning" is one line.</b> The 90s to 60s cut shipped without a miss-rate guardrail that I can find in the sources.</p><p class="small mute">Inference: confirm with Helen. The check asks "how will we know it worked?" and the answer here would have been missed pings per responder.</p></div></div></div>
+      <div class="card"><div class="check"><span class="badge b-part">SCOPE</span><div><p><b>The 14 Aug question went unanswered:</b> was the proximity change meant for responders who turn pings down? The config does not distinguish them.</p><p class="small mute">Fact (4.2 comments). The check compares what a brief says it covers at the start with what it commits to at the end.</p></div></div></div>
+      <div class="card"><div class="check"><span class="badge b-pass">PROBLEM FIRST</span><div><p><b>"Seasonal dip, it will recover" arrived before any evidence.</b> It was repeated, with no numbers behind it.</p><p class="small mute">Fact: nothing in the sources shows September data. The check puts the problem and its evidence ahead of the fix, with unknowns named.</p></div></div></div>
+    </div>
+    <p class="small mute" style="margin-top:14px">A checklist is a floor, not a guarantee: it catches a missing owner or measure, not a wrong diagnosis. It does not replace talking to Wen Li.</p>
+  </div>
+</section>
+
+<!-- 14 NEXT -->
+<section class="slide" id="s14">
+  <div class="wrap">
+    <div class="kicker">What I need next</div>
+    <h2>Three decisions for Helen, and what is still unknown.</h2>
+    <div class="grid g2">
+      <div class="card hl">
+        <h3>Decisions</h3>
+        <ol class="tight">
+          <li><b>Dead-phone guard:</b> in Stage 1, or out?</li>
+          <li><b>Availability Confidence and Ping timeout tuning</b> (both committed for 4.2, unshipped): does this plan replace them, or are they dropped or re-dated?</li>
+          <li><b>Go-ahead to take the brief to Marcus Oyelaran and Wen Li first.</b> <code>config.py</code> says to tell the engineering manager before changing anything.</li>
+        </ol>
+      </div>
+      <div class="card">
+        <h3>Still open</h3>
+        <ul class="tight small">
+          <li><span class="chip c-open">Open</span>Why the four miss so often: delivery, the 60s wait, or availability. No delivery logs exist.</li>
+          <li><span class="chip c-open">Open</span>Wen Li: miss versus decline, the neutral restore value, restart behaviour.</li>
+          <li><span class="chip c-open">Open</span>Replay the rank restore against the data; what happened to the 23 callouts that ended on a miss.</li>
+          <li><span class="chip c-open">Open</span>Calls with Dot and Kip; no responder has been interviewed. Ravi Menon for the official weekly series and prior-year data.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="margin-top:18px"><h3>Risks we are choosing with open eyes</h3><div class="pill-row"><span>A free miss next to a costly turn-down teaches responders to let pings lapse</span><span>75s is slower than 60s: callouts never taken already 5.5% to 11.1%</span><span>The restore could move out-of-area pings</span><span>Snooze touches the availability record Supply reads</span></div></div>
+  </div>
+</section>
+
+<script>
+  const slides=[...document.querySelectorAll('.slide')];
+  const nav=document.getElementById('nav'), count=document.getElementById('count');
+  slides.forEach((s,i)=>{const a=document.createElement('a');a.href='#'+s.id;a.title='Slide '+(i+1);nav.appendChild(a);});
+  const dots=[...nav.children];
+  function cur(){let best=0,d=1e9;slides.forEach((s,i)=>{const t=Math.abs(s.getBoundingClientRect().top);if(t<d){d=t;best=i;}});return best;}
+  function mark(){const i=cur();dots.forEach((x,j)=>x.classList.toggle('on',i===j));count.textContent=(i+1)+' / '+slides.length;}
+  addEventListener('scroll',mark,{passive:true});addEventListener('resize',mark);mark();
+  addEventListener('keydown',e=>{
+    if(e.target.tagName==='IFRAME')return;
+    const i=cur();
+    if(['ArrowDown','ArrowRight','PageDown'].includes(e.key)){e.preventDefault();slides[Math.min(i+1,slides.length-1)].scrollIntoView();}
+    if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();slides[Math.max(i-1,0)].scrollIntoView();}
+  });
+</script>
+</body>
+</html>
