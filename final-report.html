@@ -75,6 +75,8 @@
   .pill-row span { display:inline-block; background:var(--panel2); border:1px solid var(--line); border-radius:99px; padding:5px 12px; font-size:13px; margin:0 6px 8px 0; }
   .strike { text-decoration:line-through; color:var(--mute); }
   .flow { display:flex; gap:10px; flex-wrap:wrap; align-items:stretch; } .flow > div { flex:1; min-width:150px; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 16px; font-size:14px; font-weight:600; position:relative; } .flow > div span { display:block; font-size:11px; color:var(--teal); letter-spacing:.1em; text-transform:uppercase; margin-bottom:4px; }
+  .learned { margin-top:12px; background:#eaf7f1; border:1px solid #cdeadc; border-left:4px solid #5cc995; border-radius:12px; padding:14px 18px; font-size:14px; color:#25473a; }
+  .learned b { display:block; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:#1d7a52; margin-bottom:4px; }
   @media print { .nav,.count,.hint{display:none;} .slide{page-break-after:always;} }
 </style>
 </head>
@@ -180,14 +182,14 @@
       <div class="row"><div class="nm">Before 4.2</div><div class="bar"><i style="width:100%;background:var(--blue)"></i></div><div class="val" style="width:90px">7.0</div></div>
       <div class="row"><div class="nm">After 4.2</div><div class="bar"><i style="width:31.4%;background:var(--red)"></i></div><div class="val" style="width:90px">2.2</div></div>
       <p class="small mute" style="margin-top:8px">Farlight, The Undertow, Meteor Mite, Vesper. <span class="chip c-fact">Fact</span></p></div>
-    <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 1 · #2 · as typed</span></div>
-      <div class="txt">Not yet. Can you quantify proximity vs misses before and after the 4.2 release to dig into the hypothesis that weighting proximity up while recent-acceptance still penalizes decliners could starve some responders of pings?</div></div>
+    <div><div class="prompt"><div class="lab"><span>Prompt</span><span>Module 1 · #2 · as typed</span></div>
+      <div class="txt">Not yet. Can you quantify proximity vs misses before and after the 4.2 release to dig into the hypothesis that weighting proximity up while recent-acceptance still penalizes decliners could starve some responders of pings?</div></div><div class="learned"><b>What it taught us</b>The "starved for declining" idea did not hold. The four decline at ordinary rates but miss 59% of pings against 14% for everyone else. Out-of-area pings also rose from 17% to 39%.</div></div>
   </div>
 </div></section>
 
 <section class="slide" id="s7"><div class="wrap">
   <div class="modhead"><div class="modnum">2</div><div class="modname">Module 2 · Super hearing</div></div>
-  <h2>Handlers and tickets agree on two problems.</h2>
+  <h2>The map shows two problems: pings lapsing, and responders going quiet.</h2>
   <div class="grid g2">
     <div>
       <div class="grid g2">
@@ -199,8 +201,8 @@
         <div class="lane" style="grid-template-columns:90px 1fr 1fr"><div class="who">Responder</div><div class="bad">60s, misses cost rank</div><div class="good">Wants work offered again</div></div>
         <p class="small mute">Full map below. <a href="00-rook/feedback/journey-map.html" target="_blank">Open in its own tab.</a></p></div>
     </div>
-    <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 2 · #7 · as typed</span></div>
-      <div class="txt">create a journey map artifact of the process for our users with a row for action/job, thinking (per interviews), data before aug 12 and data after aug 12 , whose role is handling what. this should pain the story of whats happening visually, ask me 1-3 clariyfing questions as needed</div></div>
+    <div><div class="prompt"><div class="lab"><span>Prompt</span><span>Module 2 · #7 · as typed</span></div>
+      <div class="txt">create a journey map artifact of the process for our users with a row for action/job, thinking (per interviews), data before aug 12 and data after aug 12 , whose role is handling what. this should pain the story of whats happening visually, ask me 1-3 clariyfing questions as needed</div></div><div class="learned"><b>What it taught us</b>Two problems, two people. Handlers watch pings lapse, and responders lose work. Tickets undercount: three handlers never filed one.</div></div>
   </div>
 
   <iframe id="mapf" class="proto-frame" style="height:600px;margin-top:16px" title="Journey map" sandbox="allow-scripts" srcdoc="&lt;!DOCTYPE html&gt;
@@ -382,17 +384,17 @@ h1{font-size:22px;font-weight:500;margin:0 0 4px}
         <div class="row"><div class="nm">Before 4.2</div><div class="bar"><i style="width:100%;background:var(--green)"></i></div><div class="val" style="width:80px">59 of 59</div></div>
         <div class="row"><div class="nm">After 4.2</div><div class="bar"><i style="width:19.4%;background:var(--red)"></i></div><div class="val" style="width:80px">6 of 31</div></div>
         <span class="chip c-fact">Fact</span></div>
-      <div class="card" style="margin-top:14px"><h3>Pings a week: the four vs everyone else</h3>
-        <svg viewBox="0 -12 440 148" width="100%">
-          <rect x="40" y="86" width="40" height="34" fill="#7ea2f0"/><text x="52" y="80" font-size="11" fill="#6b7894">49</text>
-          <rect x="90" y="118" width="40" height="2" fill="#ee8a8a"/><text x="104" y="112" font-size="11" fill="#c25555">3</text>
-          <text x="30" y="132" font-size="10" fill="#6b7894">four quiet: start, +4 wks</text>
-          <rect x="250" y="34" width="40" height="86" fill="#7ea2f0" opacity=".6"/><text x="259" y="28" font-size="11" fill="#6b7894">123</text>
-          <rect x="300" y="7" width="40" height="113" fill="#6bd3a1" opacity=".8"/><text x="309" y="2" font-size="11" fill="#2f9b6b">162</text>
-          <text x="250" y="132" font-size="10" fill="#6b7894">everyone else: start, +4 wks</text></svg></div>
+      <div class="card" style="margin-top:14px"><h3>Farlight's timeline</h3>
+        <svg viewBox="0 0 440 110" width="100%">
+          <line x1="30" y1="50" x2="410" y2="50" stroke="#d3dbea" stroke-width="3"/>
+          <circle cx="60" cy="50" r="7" fill="#6bd3a1"/><text x="60" y="30" text-anchor="middle" font-size="11" fill="#2f9b6b">about 12 pings a week</text><text x="60" y="78" text-anchor="middle" font-size="10" fill="#6b7894">before 4.2</text>
+          <circle cx="170" cy="50" r="7" fill="#f2bd6b"/><text x="170" y="30" text-anchor="middle" font-size="11" fill="#b27614">4.2 ships</text><text x="170" y="78" text-anchor="middle" font-size="10" fill="#6b7894">12 Aug</text>
+          <circle cx="260" cy="50" r="7" fill="#ee8a8a"/><text x="260" y="30" text-anchor="middle" font-size="11" fill="#c25555">last ping taken</text><text x="260" y="78" text-anchor="middle" font-size="10" fill="#6b7894">14 Aug</text>
+          <circle cx="390" cy="50" r="7" fill="#ee8a8a"/><text x="390" y="30" text-anchor="middle" font-size="11" fill="#c25555">0 pings</text><text x="390" y="78" text-anchor="middle" font-size="10" fill="#6b7894">by 31 Aug</text>
+        </svg></div>
     </div>
-    <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 3 · #10 · as typed</span></div>
-      <div class="txt">I want to look now only at Farlight. Show me every week for them, how many times we pinged them, how many they took. Then tell me what happened to that person, week by week, in plain English.</div></div>
+    <div><div class="prompt"><div class="lab"><span>Prompt</span><span>Module 3 · #10 · as typed</span></div>
+      <div class="txt">I want to look now only at Farlight. Show me every week for them, how many times we pinged them, how many they took. Then tell me what happened to that person, week by week, in plain English.</div></div><div class="learned"><b>What it taught us</b>A single headline number hides who lost the work. Farlight was offered all 59 callouts in her area, then 6 of 31. Her last ping was taken on 14 Aug.</div></div>
   </div>
 </div></section>
 
@@ -409,8 +411,8 @@ h1{font-size:22px;font-weight:500;margin:0 0 4px}
         <text x="262" y="95" font-size="11" fill="#2f9b6b">a taken ping: +0.08</text>
         <text x="262" y="176" font-size="11" fill="#6b7894">no fade, no other recovery</text>
       </svg><span class="chip c-fact">Fact: history.py</span></div>
-    <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 4 · #12 · as typed</span></div>
-      <div class="txt">Find me the part of this code that takes points off somebody when they miss a ping or turn one down. Show it to me and explain it in plain English. Then find me every single thing in this code that puts points back on.</div></div>
+    <div><div class="prompt"><div class="lab"><span>Prompt</span><span>Module 4 · #12 · as typed</span></div>
+      <div class="txt">Find me the part of this code that takes points off somebody when they miss a ping or turn one down. Show it to me and explain it in plain English. Then find me every single thing in this code that puts points back on.</div></div><div class="learned"><b>What it taught us</b>Only taking a callout earns points back, and only if a responder takes more than 6 in 10. If you are not offered pings, you cannot recover.</div></div>
   </div>
 </div></section>
 
@@ -421,8 +423,8 @@ h1{font-size:22px;font-weight:500;margin:0 0 4px}
     <div class="card"><h3>Artifacts</h3>
       <div class="pill-row" style="margin-top:8px"><span><a href="https://github.com/agrisley/claude-code-for-pms-final/blob/main/05-super-speed/quiet-responders-brief.md" target="_blank">One-page brief</a></span><span><a href="#s11">Clickable prototype (next slides)</a></span></div>
       <p class="small mute">Draft. Only Meteor Mite's 11 to 1 pings a week is real data.</p></div>
-    <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 5 · #8 · as typed</span></div>
-      <div class="txt">Take the brief you just wrote and build me a working prototype, an actual screen I can click through, not a description of one. Save it as 05-super-speed/prototype.html, a single file I can just open in my browser. Show me where this would actually happen, and make at least one thing on it respond when I click it.</div></div>
+    <div><div class="prompt"><div class="lab"><span>Prompt</span><span>Module 5 · #8 · as typed</span></div>
+      <div class="txt">Take the brief you just wrote and build me a working prototype, an actual screen I can click through, not a description of one. Save it as 05-super-speed/prototype.html, a single file I can just open in my browser. Show me where this would actually happen, and make at least one thing on it respond when I click it.</div></div><div class="learned"><b>What it taught us</b>A clickable version made the brief concrete fast. Only Meteor Mite's 11 to 1 pings a week is real data; the rest is placeholder.</div></div>
   </div>
 </div></section>
 
@@ -811,7 +813,7 @@ h1{font-size:22px;font-weight:500;margin:0 0 4px}
       <p style="margin-top:10px"><span class="chip c-open">Verdict: fix first</span></p></div>
     <div>
       <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 6 · #1 · as typed</span></div>
-        <div class="txt">I want to save a habit as something I can reuse. When I review a brief before it goes any further, here's what I actually check for: - It names who owns it - It says how we'll know it worked - The scope at the end matches the scope at the start - It explains the problem before it proposes a fix Turn that into a skill called review-checklist, so I can point it at any brief and get the same check every time, without me explaining it again.</div></div>
+        <div class="txt">I want to save a habit as something I can reuse. When I review a brief before it goes any further, here's what I actually check for: - It names who owns it - It says how we'll know it worked - The scope at the end matches the scope at the start - It explains the problem before it proposes a fix Turn that into a skill called review-checklist, so I can point it at any brief and get the same check every time, without me explaining it again.</div></div><div class="learned"><b>What it taught us</b>Our own brief came back "fix first": no named owner, no targets, and scope drifting by Stage 2.</div>
       <p class="small mute" style="margin-top:10px">Scheduled: Mondays, about 9:06 AM. First run 19 Oct.</p>
     </div>
   </div>
