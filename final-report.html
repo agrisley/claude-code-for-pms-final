@@ -74,6 +74,7 @@
   .arrow { color:var(--mute); padding:0 6px; }
   .pill-row span { display:inline-block; background:var(--panel2); border:1px solid var(--line); border-radius:99px; padding:5px 12px; font-size:13px; margin:0 6px 8px 0; }
   .strike { text-decoration:line-through; color:var(--mute); }
+  .flow { display:flex; gap:10px; flex-wrap:wrap; align-items:stretch; } .flow > div { flex:1; min-width:150px; background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:14px 16px; font-size:14px; font-weight:600; position:relative; } .flow > div span { display:block; font-size:11px; color:var(--teal); letter-spacing:.1em; text-transform:uppercase; margin-bottom:4px; }
   @media print { .nav,.count,.hint{display:none;} .slide{page-break-after:always;} }
 </style>
 </head>
@@ -81,285 +82,186 @@
 <nav class="nav" id="nav"></nav>
 <div class="count" id="count"></div>
 
-<!-- 1 TITLE -->
-<section class="slide" id="s1">
-  <div class="wrap">
-    <div class="kicker">Rook Dispatch · Final report · Draft for Helen Achebe</div>
-    <h1>What release 4.2 did to our responders, and what we build instead</h1>
-    <p class="lead">Six working sessions, one question: why did callout tickets jump after 12 August, and how do we fix it without quietly changing a number? Every claim below is tagged as a fact from a source, an inference, or still open.</p>
-    <div class="tag-row" style="margin-top:22px">
-      <span class="chip c-fact">Fact: from a source</span><span class="chip c-inf">Inference: reasoned, not confirmed</span><span class="chip c-open">Open: not yet known</span>
-    </div>
-    <p class="small mute">Rook Industries is a fictional teaching scenario. Responders appear by cover name only; nothing here maps a cover name to a person.</p>
-  </div>
-  <div class="hint">Scroll, or use the arrow keys ↓</div>
-</section>
+<section class="slide" id="s1"><div class="wrap">
+  <div class="kicker">Rook Dispatch · Final report · Draft for Helen Achebe</div>
+  <h1>What release 4.2 did to our responders, and what we build instead</h1>
+  <p class="lead">Six sessions, one question: why did callout tickets jump after 12 August?</p>
+  <div class="tag-row" style="margin-top:22px"><span class="chip c-fact">Fact</span><span class="chip c-inf">Inference</span><span class="chip c-open">Open</span></div>
+  <p class="small mute">Fictional teaching scenario. Cover names only.</p>
+</div><div class="hint">Scroll or use the arrow keys ↓</div></section>
 
-<!-- 2 EXEC SUMMARY -->
-<section class="slide" id="s2">
-  <div class="wrap">
-    <div class="kicker">Executive summary</div>
-    <h2>4.2 made a few responders go quiet, and our scoring rules keep them quiet.</h2>
-    <p class="lead">Release 4.2 shortened the ping wait from 90s to 60s and re-weighted routing toward proximity. Pings that used to be answered started lapsing. The scoring code treats a miss like a decline, never forgives it, and only a taken ping earns points back. A responder who stops being offered pings has no way to recover.</p>
-    <div class="grid g4" style="margin-top:20px">
-      <div class="card"><div class="stat" style="color:var(--red)">2.3%<span class="arrow">→</span>18.0%</div><div class="stat-label">Share of pings missed, before vs after 4.2 (about 8x)</div></div>
-      <div class="card"><div class="stat" style="color:var(--amber)">49<span class="arrow">→</span>3</div><div class="stat-label">Pings a week to the four quiet responders, over four weeks. Everyone else rose 123 → 162</div></div>
-      <div class="card"><div class="stat" style="color:var(--red)">45</div><div class="stat-label">Callout-related tickets, all still open</div></div>
-      <div class="card"><div class="stat" style="color:var(--teal)">6</div><div class="stat-label">Stage 1 changes proposed: free miss, 75s countdown, one-time rank restore, handler flag, snooze, optional dead-phone guard</div></div>
-    </div>
-    <div class="grid g3" style="margin-top:18px">
-      <div class="card"><h3>What we're seeing</h3><p class="small mute">Abrupt drop at release, not a slow slide. Data window is 29 Jun to 6 Sep, so "seasonal August dip" cannot be tested, and nothing in the sources supports it.</p></div>
-      <div class="card"><h3>Why it matters</h3><p class="small mute">Quiet responders stay quiet, and handlers only hear about it through tickets. That is a quiet loss of coverage, and nobody is measuring it.</p></div>
-      <div class="card"><h3>What we recommend</h3><p class="small mute">A miss stops lowering rank and a turn-down still does. The wait goes to 75s with a countdown, and handlers see who has gone quiet. A review-checklist skill runs every Monday so the next brief gets the same four checks.</p></div>
-    </div>
-    <p class="small mute" style="margin-top:14px">Not yet verified: why the four miss so often (phone delivery, the 60s wait, or availability). The brief has not been seen by Marcus Oyelaran or Wen Li.</p>
+<section class="slide" id="s2"><div class="wrap">
+  <div class="kicker">Executive summary</div>
+  <h2>4.2 made some responders go quiet, and our scoring rules keep them quiet.</h2>
+  <div class="grid g4" style="margin-top:18px">
+    <div class="card"><div class="stat" style="color:var(--red)">2.3%<span class="arrow">→</span>18%</div><div class="stat-label">pings missed, before vs after 4.2</div></div>
+    <div class="card"><div class="stat" style="color:var(--amber)">49<span class="arrow">→</span>3</div><div class="stat-label">pings a week to four responders</div></div>
+    <div class="card"><div class="stat" style="color:var(--red)">45</div><div class="stat-label">callout tickets, all open</div></div>
+    <div class="card"><div class="stat" style="color:var(--teal)">6</div><div class="stat-label">changes proposed for Stage 1</div></div>
   </div>
-</section>
-
-<!-- 3 PROBLEM STATEMENT -->
-<section class="slide" id="s3">
-  <div class="wrap">
-    <div class="kicker">Problem statement and what we set out to do</div>
-    <h2>Callout tickets are about 4 to 12x normal since 4.2, and nobody could say why.</h2>
-    <div class="grid g2" style="margin-top:10px">
-      <div class="card hl">
-        <h3>The problem</h3>
-        <p>Since 4.2 shipped on 12 August, handlers write in about two things: "my phone never goes off" and "ping gone before I could answer". The hand-over said it was a seasonal August dip that would recover in September. <b>No numbers supported that.</b> The one-third theme fits the shorter wait; the two-thirds theme had no explanation.</p>
-        <p class="small mute">Ticket volume: "3x normal" does not reproduce. It is about 12x for callout tickets only and about 4x for all tickets (support_tickets table).</p>
-      </div>
-      <div class="card">
-        <h3>What we set out to do</h3>
-        <p>We set out to find what 4.2 actually did to responders, working from data rather than hunches. From there we wanted the mechanism, both in the code and in the experience of the people it happens to. Then we designed the fix from the responder's point of view, as a clickable prototype, instead of quietly changing a number. Last, we turned our review habit into something reusable, so the next brief gets the same scrutiny.</p>
-        <p class="small mute" style="margin-top:12px">Out of scope: reverting 4.2, fixing phone delivery, any identity inference (Security Policy 4.1), changes to Supply.</p>
-      </div>
-    </div>
+  <div class="grid g3" style="margin-top:18px">
+    <div class="card"><h3>What we're seeing</h3><p class="small mute">An abrupt drop at release. Not seasonal.</p></div>
+    <div class="card"><h3>Why it matters</h3><p class="small mute">A missed ping costs rank, and only a taken ping earns it back.</p></div>
+    <div class="card"><h3>What we recommend</h3><p class="small mute">Free misses, a 75s wait, a rank restore, and a weekly brief check.</p></div>
   </div>
-</section>
+  <p class="small mute" style="margin-top:14px"><span class="chip c-open">Open</span>Why the four miss so often. Marcus and Wen have not seen the brief.</p>
+</div></section>
 
-<!-- 4 METHODOLOGY -->
-<section class="slide" id="s4">
-  <div class="wrap">
-    <div class="kicker">Methodology</div>
-    <h2>Six steps, each one narrowing the question.</h2>
-    <div class="timeline" style="margin-top:30px">
-      <div class="step"><div class="dot">1</div><b>Origin story</b><span>Wiki, hand-over note, first look at the database</span></div>
-      <div class="step"><div class="dot">2</div><b>Super hearing</b><span>4 handler interviews, 147 tickets</span></div>
-      <div class="step"><div class="dot">3</div><b>Rewind</b><span>Pings by responder, week and time of day</span></div>
-      <div class="step"><div class="dot">4</div><b>X-ray vision</b><span>Read the routing code in full</span></div>
-      <div class="step"><div class="dot">5</div><b>Super speed</b><span>One-page brief and clickable prototype</span></div>
-      <div class="step"><div class="dot">6</div><b>Sidekicks</b><span>Review skill and Monday schedule</span></div>
-    </div>
-    <div class="grid g3" style="margin-top:34px">
-      <div class="card"><h3>Ground rules</h3><p class="small mute">We kept what a source says apart from what we inferred, cited the page, flagged claims with no data behind them, and never invented a metric. We compare rates rather than counts because the windows are unequal (44 days before 4.2, 26 after).</p></div>
-      <div class="card"><h3>Sources</h3><p class="small mute">The rook-wiki (Glossary, Team directory, releases, roadmap, briefs and the 4.2 comments), the rook-database (callouts, pings, responders, handlers, support tickets), four handler interviews, Priya's hand-over note and the dispatch-routing code.</p></div>
-      <div class="card"><h3>Limits</h3><p class="small mute">The database covers 29 Jun to 6 Sep only, so there is no prior-year data. We have 16 responders over about 10 weeks and no responder interviews. No delivery or ranking data exists, and <code>push_to_device</code> is a stub.</p></div>
-    </div>
+<section class="slide" id="s3"><div class="wrap">
+  <div class="kicker">Problem statement</div>
+  <h2>Callout tickets are about 4 to 12x normal since 4.2, and nobody could say why.</h2>
+  <div class="grid g2" style="margin-top:8px">
+    <div class="card hl"><h3>The problem</h3><div class="grid g2" style="gap:12px;margin-top:8px"><div><div class="stat" style="color:var(--amber)">1/3</div><div class="stat-label">"ping gone before I could answer"</div></div><div><div class="stat" style="color:var(--red)">2/3</div><div class="stat-label">"my phone never goes off": unexplained</div></div></div><p class="small mute" style="margin-top:12px">The hand-over said "seasonal, it will recover". No numbers support that.</p></div>
+    <div class="card"><h3>What we set out to do</h3><div class="flow" style="margin-top:8px"><div><span>1</span>Find what happened</div><div><span>2</span>Find the mechanism</div><div><span>3</span>Design the fix</div><div><span>4</span>Make review repeatable</div></div></div>
   </div>
-</section>
+</div></section>
 
-<!-- 5 WHAT HAPPENED -->
-<section class="slide" id="s5">
-  <div class="wrap">
-    <div class="kicker">What happened with release 4.2</div>
-    <h2>Three changes shipped together. The wait got shorter and the ranking got stricter.</h2>
-    <div class="grid g3" style="margin-top:8px">
-      <div class="card">
-        <h3>Ping wait</h3>
-        <svg viewBox="0 0 300 70" width="100%"><rect x="0" y="10" width="270" height="18" rx="9" fill="#e3e9f5"/><rect x="0" y="10" width="270" height="18" rx="9" fill="#7ea2f0"/><text x="8" y="23" font-size="11" fill="#fff" font-weight="700">before: 90s</text><rect x="0" y="40" width="180" height="18" rx="9" fill="#ee8a8a"/><text x="8" y="53" font-size="11" fill="#fff" font-weight="700">4.2: 60s</text></svg>
-        <p class="small mute">Gap after a missed ping: 92s before, 62s after. Callout to first ping is unchanged (about 14s). <span class="chip c-fact">Fact</span></p>
-      </div>
-      <div class="card">
-        <h3>Routing weights</h3>
-        <svg viewBox="0 0 300 90" width="100%">
-          <rect x="0" y="10" width="135" height="20" fill="#7ea2f0"/><rect x="135" y="10" width="120" height="20" fill="#5fd0bb"/><rect x="255" y="10" width="45" height="20" fill="#a794ea"/>
-          <text x="6" y="24" font-size="10" fill="#fff" font-weight="700">proximity .45</text><text x="140" y="24" font-size="10" fill="#fff" font-weight="700">recent acceptance .40</text>
-          <rect x="0" y="50" width="180" height="20" fill="#7ea2f0"/><rect x="180" y="50" width="75" height="20" fill="#5fd0bb"/><rect x="255" y="50" width="45" height="20" fill="#a794ea"/>
-          <text x="6" y="64" font-size="10" fill="#fff" font-weight="700">proximity .60</text><text x="184" y="64" font-size="10" fill="#fff" font-weight="700">.25</text>
-          <text x="0" y="86" font-size="10" fill="#6b7894">capability stays .15 (violet)</text>
-        </svg>
-        <p class="small mute">Global weights, applied to everyone. <span class="chip c-fact">Fact (config.py)</span></p>
-      </div>
-      <div class="card">
-        <h3>Scoring rule that bites</h3>
-        <div class="row" style="margin-top:2px"><div class="nm" style="width:92px">Miss or decline</div><div class="bar"><i style="width:60%;background:var(--red)"></i></div><div class="val" style="width:56px;color:#c25555">−0.12</div></div>
-        <div class="row"><div class="nm" style="width:92px">Taken</div><div class="bar"><i style="width:40%;background:var(--green)"></i></div><div class="val" style="width:56px;color:#2f9b6b">+0.08</div></div>
-        <p class="small mute">Floor 0, no fade. A responder only gains if they take more than about 6 in 10. <span class="chip c-fact">Fact (history.py)</span></p>
-      </div>
-    </div>
-    <div class="grid g2" style="margin-top:18px">
-      <div class="card">
-        <h3>Weekly acceptance rate (share of pings taken)</h3>
-        <svg viewBox="0 0 520 190" width="100%">
-          <line x1="40" y1="20" x2="40" y2="160" stroke="#d3dbea"/><line x1="40" y1="160" x2="510" y2="160" stroke="#d3dbea"/>
-          <text x="6" y="38" font-size="10" fill="#6b7894">80%</text><text x="6" y="98" font-size="10" fill="#6b7894">65%</text><text x="6" y="158" font-size="10" fill="#6b7894">50%</text>
-          <rect x="40" y="31" width="250" height="14" fill="#6bd3a1" opacity=".28"/>
-          <text x="48" y="28" font-size="11" fill="#2f9b6b">75–78% for six weeks</text>
-          <line x1="290" y1="20" x2="290" y2="160" stroke="#f2bd6b" stroke-dasharray="4 4"/><text x="296" y="30" font-size="10" fill="#b27614">4.2 ships, 12 Aug</text>
-          <circle cx="300" cy="128" r="6" fill="#ee8a8a"/><text x="312" y="132" font-size="12" fill="#c25555" font-weight="700">54%</text>
-          <line x1="300" y1="128" x2="470" y2="66" stroke="#97a5c2" stroke-dasharray="3 4"/>
-          <circle cx="470" cy="66" r="6" fill="#f2bd6b"/><text x="506" y="52" text-anchor="end" font-size="12" fill="#b27614" font-weight="700">about 73%, week of 31 Aug</text>
-        </svg>
-        <p class="small mute">Intermediate weeks omitted: only the values in my notes are plotted. An abrupt drop at release does not look like a seasonal slide. <span class="chip c-fact">Fact (database)</span></p>
-      </div>
-      <div class="card">
-        <h3>Share of pings missed</h3>
-        <div class="row"><div class="nm">Before 4.2</div><div class="bar"><i style="width:12.8%;background:var(--green)"></i></div><div class="val">2.3%</div></div>
-        <div class="row"><div class="nm">After 4.2</div><div class="bar"><i style="width:100%;background:var(--red)"></i></div><div class="val">18.0%</div></div>
-        <div class="row"><div class="nm">Week of 31 Aug</div><div class="bar"><i style="width:70.5%;background:var(--amber)"></i></div><div class="val">12.7%</div></div>
-        <p class="small mute" style="margin-top:12px">Misses are spread across almost everyone (in-area misses 0.7% to 10.3%): consistent with the shorter wait. But four responders stand out.</p>
-        <span class="chip c-inf">Inference</span><span class="small mute">The 60s wait drives the misses; misses lower rank; lower rank means fewer pings.</span>
-      </div>
-    </div>
+<section class="slide" id="s4"><div class="wrap">
+  <div class="kicker">Methodology</div>
+  <h2>Six steps, each narrowing the question.</h2>
+  <div class="timeline" style="margin-top:30px">
+    <div class="step"><div class="dot">1</div><b>Origin story</b><span>Wiki, hand-over, database</span></div>
+    <div class="step"><div class="dot">2</div><b>Super hearing</b><span>Interviews and tickets</span></div>
+    <div class="step"><div class="dot">3</div><b>Rewind</b><span>Pings by responder and week</span></div>
+    <div class="step"><div class="dot">4</div><b>X-ray vision</b><span>The routing code</span></div>
+    <div class="step"><div class="dot">5</div><b>Super speed</b><span>Brief and prototype</span></div>
+    <div class="step"><div class="dot">6</div><b>Sidekicks</b><span>Review skill</span></div>
   </div>
-</section>
-
-<!-- 6 MODULE 1 -->
-<section class="slide" id="s6">
-  <div class="wrap">
-    <div class="modhead"><div class="modnum">1</div><div><div class="modname">Module 1 · Origin story</div></div></div>
-    <h2>The drop happened at release, and four responders took most of it.</h2>
-    <div class="grid g2">
-      <div>
-        <div class="card">
-          <h3>Four responders lost about two thirds of their pings</h3>
-          <div class="row"><div class="nm">Before 4.2</div><div class="bar"><i style="width:100%;background:var(--blue)"></i></div><div class="val">7.0 / day</div></div>
-          <div class="row"><div class="nm">After 4.2</div><div class="bar"><i style="width:31.4%;background:var(--red)"></i></div><div class="val">2.2 / day</div></div>
-          <p class="small mute" style="margin-top:10px">Farlight, The Undertow, Meteor Mite, Vesper. They miss 53% of even home-area pings. Their earlier decline rates were ordinary, so "starved for declining" is not supported.</p>
-          <p class="small mute">Out-of-area pings rose from 17% to 39% of all pings, which cuts against "proximity weighted up". <span class="chip c-open">Open: ask Wen Li</span></p>
-        </div>
-        <div class="card" style="margin-top:14px"><h3>Artifact this led to</h3><p class="small mute">The weekly series above (acceptance flat at 75–78%, then 54% in the release week), and the finding that the database cannot test "August is always soft": it has no prior-year data.</p></div>
-      </div>
-      <div class="prompt">
-        <div class="lab"><span>Prompt that produced it</span><span>Module 1 · #2 · exactly as typed</span></div>
-        <div class="txt">Not yet. Can you quantify proximity vs misses before and after the 4.2 release to dig into the hypothesis that weighting proximity up while recent-acceptance still penalizes decliners could starve some responders of pings?</div>
-        <p class="small mute" style="margin-top:12px">It followed prompt #1, which asked for past data to support a seasonal dip. There was none.</p>
-      </div>
-    </div>
+  <div class="grid g3" style="margin-top:34px">
+    <div class="card"><h3>Rates, not counts</h3><p class="small mute">Windows are unequal: 44 days before, 26 after.</p></div>
+    <div class="card"><h3>Fact vs inference</h3><p class="small mute">Every claim is tagged. No invented metrics.</p></div>
+    <div class="card"><h3>Limits</h3><p class="small mute">Data covers 29 Jun to 6 Sep. No delivery logs.</p></div>
   </div>
-</section>
+</div></section>
 
-<!-- 7 MODULE 2 -->
-<section class="slide" id="s7">
-  <div class="wrap">
-    <div class="modhead"><div class="modnum">2</div><div><div class="modname">Module 2 · Super hearing</div></div></div>
-    <h2>Handlers and tickets agree on two problems, and the journey map shows who feels what.</h2>
-    <div class="grid g2">
-      <div>
-        <div class="grid g2">
-          <div class="card"><div class="stat" style="color:var(--amber)">13</div><div class="stat-label">tickets, 9 handlers: "pings gone before the responder can answer"</div></div>
-          <div class="card"><div class="stat" style="color:var(--red)">32</div><div class="stat-label">tickets, 4 responders: "responders going quiet"</div></div>
-        </div>
-        <div class="card" style="margin-top:14px">
-          <h3>Journey map (artifact): what changed along the path</h3>
-          <div class="lane"><div class="who">Handler</div><div class="bad">Sends callout, then watches pings lapse and tickets pile up</div><div class="good">Wants: know a responder has gone quiet before a ticket</div></div>
-          <div class="lane"><div class="who">Responder</div><div class="bad">60s to answer; misses quietly lower rank</div><div class="good">Wants: work offered again, and to know why</div></div>
-          <p class="small mute">Full map: <a href="00-rook/feedback/journey-map.html">00-rook/feedback/journey-map.html</a>. Tickets undercount: Dot, Kip and Halloran never filed one.</p>
-        </div>
-      </div>
-      <div class="prompt">
-        <div class="lab"><span>Prompt that produced it</span><span>Module 2 · #7 · exactly as typed</span></div>
-        <div class="txt">create a journey map artifact of the process for our users with a row for action/job, thinking (per interviews), data before aug 12 and data after aug 12 , whose role is handling what. this should pain the story of whats happening visually, ask me 1-3 clariyfing questions as needed</div>
-        <p class="small mute" style="margin-top:12px">Four handler interviews (2 to 5 Sep) and 147 tickets (29 Jun to 7 Sep, 12 handlers). All 45 callout tickets are still open. <span class="chip c-fact">Fact</span></p>
-      </div>
-    </div>
+<section class="slide" id="s5"><div class="wrap">
+  <div class="kicker">What happened with release 4.2</div>
+  <h2>The wait got shorter and the ranking got stricter.</h2>
+  <div class="grid g3" style="margin-top:8px">
+    <div class="card"><h3>Ping wait</h3>
+      <svg viewBox="0 0 300 70" width="100%"><rect x="0" y="10" width="270" height="18" rx="9" fill="#7ea2f0"/><text x="8" y="23" font-size="11" fill="#fff" font-weight="700">before: 90s</text><rect x="0" y="40" width="180" height="18" rx="9" fill="#ee8a8a"/><text x="8" y="53" font-size="11" fill="#fff" font-weight="700">4.2: 60s</text></svg>
+      <span class="chip c-fact">Fact</span></div>
+    <div class="card"><h3>Routing weights</h3>
+      <svg viewBox="0 0 300 90" width="100%">
+        <rect x="0" y="10" width="135" height="20" fill="#7ea2f0"/><rect x="135" y="10" width="120" height="20" fill="#5fd0bb"/><rect x="255" y="10" width="45" height="20" fill="#a794ea"/>
+        <text x="6" y="24" font-size="10" fill="#fff" font-weight="700">proximity .45</text><text x="140" y="24" font-size="10" fill="#fff" font-weight="700">acceptance .40</text>
+        <rect x="0" y="50" width="180" height="20" fill="#7ea2f0"/><rect x="180" y="50" width="75" height="20" fill="#5fd0bb"/><rect x="255" y="50" width="45" height="20" fill="#a794ea"/>
+        <text x="6" y="64" font-size="10" fill="#fff" font-weight="700">proximity .60</text><text x="184" y="64" font-size="10" fill="#fff" font-weight="700">.25</text>
+      </svg><span class="chip c-fact">Fact</span></div>
+    <div class="card"><h3>Score per ping</h3>
+      <div class="row" style="margin-top:2px"><div class="nm" style="width:92px">Miss or decline</div><div class="bar"><i style="width:60%;background:var(--red)"></i></div><div class="val" style="width:56px;color:#c25555">−0.12</div></div>
+      <div class="row"><div class="nm" style="width:92px">Taken</div><div class="bar"><i style="width:40%;background:var(--green)"></i></div><div class="val" style="width:56px;color:#2f9b6b">+0.08</div></div>
+      <span class="chip c-fact">Fact</span></div>
   </div>
-</section>
-
-<!-- 8 MODULE 3 -->
-<section class="slide" id="s8">
-  <div class="wrap">
-    <div class="modhead"><div class="modnum">3</div><div><div class="modname">Module 3 · Rewind</div></div></div>
-    <h2>Farlight went from being offered every callout in her area to almost none.</h2>
-    <div class="grid g2">
-      <div>
-        <div class="card">
-          <h3>Farlight's home area (Uptown): callouts she was offered</h3>
-          <div class="row"><div class="nm">Before 4.2</div><div class="bar"><i style="width:100%;background:var(--green)"></i></div><div class="val">59 of 59</div></div>
-          <div class="row"><div class="nm">After 4.2</div><div class="bar"><i style="width:19.4%;background:var(--red)"></i></div><div class="val">6 of 31</div></div>
-          <p class="small mute" style="margin-top:10px">About 12 pings a week down to 0 by 31 Aug. Last ping taken 14 Aug. <span class="chip c-fact">Fact (database)</span></p>
-        </div>
-        <div class="card" style="margin-top:14px">
-          <h3>The four vs everyone else, pings per week</h3>
-          <svg viewBox="0 0 440 130" width="100%">
-            <rect x="40" y="40" width="40" height="80" fill="#7ea2f0"/><text x="38" y="34" font-size="11" fill="#6b7894">49</text>
-            <rect x="90" y="115" width="40" height="5" fill="#ee8a8a"/><text x="104" y="109" font-size="11" fill="#c25555">3</text>
-            <text x="30" y="132" font-size="10" fill="#6b7894">four quiet</text>
-            <rect x="250" y="12" width="40" height="108" fill="#7ea2f0" opacity=".6"/><text x="248" y="8" font-size="11" fill="#6b7894">123</text>
-            <rect x="300" y="-6" width="40" height="126" fill="#6bd3a1" opacity=".8"/><text x="298" y="8" font-size="11" fill="#fff" font-weight="700" dy="14">162</text>
-            <text x="262" y="132" font-size="10" fill="#6b7894">everyone else</text>
-          </svg>
-          <p class="small mute">Over four weeks: a slide, not a step. Bars are to scale with each other.</p>
-        </div>
-      </div>
-      <div class="prompt">
-        <div class="lab"><span>Prompt that produced it</span><span>Module 3 · #10 · exactly as typed</span></div>
-        <div class="txt">I want to look now only at Farlight. Show me every week for them, how many times we pinged them, how many they took. Then tell me what happened to that person, week by week, in plain English.</div>
-        <p class="small mute" style="margin-top:12px">A later prompt asked what you would have missed with only a number and not the rows. This one is the answer: the single "3 to 23 misses" figure hides who lost the work. Counts are also not comparable across unequal windows, so the rate (2.3% to 18.0%) is the safer headline.</p>
-        <span class="chip c-open">Open</span><span class="small mute">Farlight's real rank and score on Uptown callouts (Wen Li); push delivery logs.</span>
-      </div>
-    </div>
+  <div class="grid g2" style="margin-top:18px">
+    <div class="card"><h3>Weekly acceptance rate</h3>
+      <svg viewBox="0 0 520 190" width="100%">
+        <line x1="40" y1="20" x2="40" y2="160" stroke="#d3dbea"/><line x1="40" y1="160" x2="510" y2="160" stroke="#d3dbea"/>
+        <text x="6" y="38" font-size="10" fill="#6b7894">80%</text><text x="6" y="98" font-size="10" fill="#6b7894">65%</text><text x="6" y="158" font-size="10" fill="#6b7894">50%</text>
+        <rect x="40" y="31" width="250" height="14" fill="#6bd3a1" opacity=".35"/><text x="48" y="28" font-size="11" fill="#2f9b6b">75–78% for six weeks</text>
+        <line x1="290" y1="20" x2="290" y2="160" stroke="#f2bd6b" stroke-dasharray="4 4"/><text x="296" y="30" font-size="10" fill="#b27614">4.2 ships, 12 Aug</text>
+        <circle cx="300" cy="128" r="6" fill="#ee8a8a"/><text x="312" y="132" font-size="12" fill="#c25555" font-weight="700">54%</text>
+        <line x1="300" y1="128" x2="470" y2="66" stroke="#97a5c2" stroke-dasharray="3 4"/>
+        <circle cx="470" cy="66" r="6" fill="#f2bd6b"/><text x="506" y="52" text-anchor="end" font-size="12" fill="#b27614" font-weight="700">about 73%, week of 31 Aug</text>
+      </svg><span class="chip c-fact">Fact</span><span class="small mute">A step at release, not a slide.</span></div>
+    <div class="card"><h3>Share of pings missed</h3>
+      <div class="row"><div class="nm">Before 4.2</div><div class="bar"><i style="width:12.8%;background:var(--green)"></i></div><div class="val">2.3%</div></div>
+      <div class="row"><div class="nm">After 4.2</div><div class="bar"><i style="width:100%;background:var(--red)"></i></div><div class="val">18.0%</div></div>
+      <div class="row"><div class="nm">Week of 31 Aug</div><div class="bar"><i style="width:70.5%;background:var(--amber)"></i></div><div class="val">12.7%</div></div>
+      <span class="chip c-inf">Inference</span><span class="small mute">The 60s wait drives the misses.</span></div>
   </div>
-</section>
+</div></section>
 
-<!-- 9 MODULE 4 -->
-<section class="slide" id="s9">
-  <div class="wrap">
-    <div class="modhead"><div class="modnum">4</div><div><div class="modname">Module 4 · X-ray vision</div></div></div>
-    <h2>The code treats a miss like a decline, and the only way back is to take a callout.</h2>
-    <div class="grid g2">
-      <div>
-        <div class="card">
-          <h3>How a responder's score moves (history.py)</h3>
-          <svg viewBox="0 0 440 190" width="100%">
-            <line x1="40" y1="150" x2="430" y2="150" stroke="#d3dbea"/><text x="6" y="154" font-size="10" fill="#6b7894">floor 0</text>
-            <polyline points="50,40 90,70 130,100 170,130 210,150 250,150 290,150" fill="none" stroke="#ee8a8a" stroke-width="3"/>
-            <text x="50" y="30" font-size="11" fill="#c25555">miss, miss, miss … −0.12 each</text>
-            <polyline points="290,150 320,134 350,118 380,102" fill="none" stroke="#6bd3a1" stroke-width="3" stroke-dasharray="1 0"/>
-            <text x="262" y="95" font-size="11" fill="#2f9b6b">only a taken ping gives +0.08</text>
-            <text x="262" y="176" font-size="11" fill="#6b7894">no fade over time, no other recovery</text>
-          </svg>
-          <p class="small mute"><span class="chip c-fact">Fact (code)</span>4.2 also cut the recent-acceptance weight from 0.40 to 0.25, so rank alone may not explain the whole drop. <span class="chip c-inf">Inference</span></p>
-        </div>
-        <div class="card" style="margin-top:14px"><h3>Answer to the engineering manager's 14 Aug question</h3><p class="small mute">Did the change apply to responders already turning pings down? The weights are global, so it applied to everyone. Pre-4.2 decline history did not predict who lost pings. A reply to Marcus Oyelaran was drafted, not sent.</p></div>
-      </div>
-      <div class="prompt">
-        <div class="lab"><span>Prompt that produced it</span><span>Module 4 · #12 · exactly as typed</span></div>
-        <div class="txt">Find me the part of this code that takes points off somebody when they miss a ping or turn one down. Show it to me and explain it in plain English. Then find me every single thing in this code that puts points back on.</div>
-        <p class="small mute" style="margin-top:12px">Code read in full: <code>config.py</code>, <code>routing.py</code>, <code>offer.py</code>, <code>history.py</code>. Sending the offer, availability and travel time are empty placeholders, so delivery cannot be checked from code.</p>
-      </div>
-    </div>
+<section class="slide" id="s6"><div class="wrap">
+  <div class="modhead"><div class="modnum">1</div><div class="modname">Module 1 · Origin story</div></div>
+  <h2>The drop happened at release, and four responders took most of it.</h2>
+  <div class="grid g2">
+    <div class="card"><h3>Pings a day to the four</h3>
+      <div class="row"><div class="nm">Before 4.2</div><div class="bar"><i style="width:100%;background:var(--blue)"></i></div><div class="val" style="width:90px">7.0</div></div>
+      <div class="row"><div class="nm">After 4.2</div><div class="bar"><i style="width:31.4%;background:var(--red)"></i></div><div class="val" style="width:90px">2.2</div></div>
+      <p class="small mute" style="margin-top:8px">Farlight, The Undertow, Meteor Mite, Vesper. <span class="chip c-fact">Fact</span></p></div>
+    <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 1 · #2 · as typed</span></div>
+      <div class="txt">Not yet. Can you quantify proximity vs misses before and after the 4.2 release to dig into the hypothesis that weighting proximity up while recent-acceptance still penalizes decliners could starve some responders of pings?</div></div>
   </div>
-</section>
+</div></section>
 
-<!-- 10 MODULE 5 -->
-<section class="slide" id="s10">
-  <div class="wrap">
-    <div class="modhead"><div class="modnum">5</div><div><div class="modname">Module 5 · Super speed</div></div></div>
-    <h2>Helen asked what we'd build instead of quietly changing a number. We built it, clickable.</h2>
-    <div class="grid g2">
-      <div>
-        <div class="card">
-          <h3>Artifacts</h3>
-          <p class="small mute">The one-page brief, <a href="05-super-speed/quiet-responders-brief.md">quiet-responders-brief.md</a>, is written from the point of view of the person it happens to. The clickable <a href="05-super-speed/prototype.html">prototype.html</a> shows a lock-screen push with a 75s countdown, the responder phone, the handler phone app and the web console, with cartoon superhero avatars (cover names only).</p>
-          <p class="small mute">Draft only. Marcus, Wen and Helen have not seen the prototype. Only Meteor Mite's 11 to 1 pings a week is real data; the rest is placeholder.</p>
-        </div>
-        <div class="card" style="margin-top:14px"><h3>Judgement calls along the way</h3><p class="small mute">Prompt #9 questioned "Can't go right now", since it would read as a turn-down. It became <b>snooze</b>: skipped for now, still in the queue. Prompts #5 and #6 asked for blind spots and what to propose instead.</p></div>
+<section class="slide" id="s7"><div class="wrap">
+  <div class="modhead"><div class="modnum">2</div><div class="modname">Module 2 · Super hearing</div></div>
+  <h2>Handlers and tickets agree on two problems.</h2>
+  <div class="grid g2">
+    <div>
+      <div class="grid g2">
+        <div class="card"><div class="stat" style="color:var(--amber)">13</div><div class="stat-label">tickets, 9 handlers: pings gone too fast</div></div>
+        <div class="card"><div class="stat" style="color:var(--red)">32</div><div class="stat-label">tickets, 4 responders: gone quiet</div></div>
       </div>
-      <div class="prompt">
-        <div class="lab"><span>Prompt that produced it</span><span>Module 5 · #8 · exactly as typed</span></div>
-        <div class="txt">Take the brief you just wrote and build me a working prototype, an actual screen I can click through, not a description of one. Save it as 05-super-speed/prototype.html, a single file I can just open in my browser. Show me where this would actually happen, and make at least one thing on it respond when I click it.</div>
-      </div>
+      <div class="card" style="margin-top:14px"><h3>Journey map</h3>
+        <div class="lane" style="grid-template-columns:90px 1fr 1fr"><div class="who">Handler</div><div class="bad">Pings lapse, tickets pile up</div><div class="good">Wants early warning</div></div>
+        <div class="lane" style="grid-template-columns:90px 1fr 1fr"><div class="who">Responder</div><div class="bad">60s, misses cost rank</div><div class="good">Wants work offered again</div></div>
+        <p class="small mute"><a href="00-rook/feedback/journey-map.html">Open the journey map</a></p></div>
     </div>
+    <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 2 · #7 · as typed</span></div>
+      <div class="txt">create a journey map artifact of the process for our users with a row for action/job, thinking (per interviews), data before aug 12 and data after aug 12 , whose role is handling what. this should pain the story of whats happening visually, ask me 1-3 clariyfing questions as needed</div></div>
   </div>
-</section>
+</div></section>
 
-<!-- 11 THE FIX: PROTOTYPE -->
-<section class="slide" id="s11">
-  <div class="wrap">
-    <div class="kicker">The fix</div>
-    <h2>Try it: the same ping, seen by the person it happens to.</h2>
-    <p class="lead small" style="margin-bottom:12px">Start with "Send a ping" under the responder's phone, tap the notification on the lock screen, then watch the handler's view. Everything below is the live prototype, not a screenshot. </p>
-    <iframe id="proto" class="proto-frame" title="Quiet responders prototype" sandbox="allow-scripts" srcdoc="&lt;!DOCTYPE html&gt;
+<section class="slide" id="s8"><div class="wrap">
+  <div class="modhead"><div class="modnum">3</div><div class="modname">Module 3 · Rewind</div></div>
+  <h2>Farlight went from every callout in her area to almost none.</h2>
+  <div class="grid g2">
+    <div>
+      <div class="card"><h3>Uptown callouts offered to Farlight</h3>
+        <div class="row"><div class="nm">Before 4.2</div><div class="bar"><i style="width:100%;background:var(--green)"></i></div><div class="val" style="width:80px">59 of 59</div></div>
+        <div class="row"><div class="nm">After 4.2</div><div class="bar"><i style="width:19.4%;background:var(--red)"></i></div><div class="val" style="width:80px">6 of 31</div></div>
+        <span class="chip c-fact">Fact</span></div>
+      <div class="card" style="margin-top:14px"><h3>Pings a week: the four vs everyone else</h3>
+        <svg viewBox="0 -12 440 148" width="100%">
+          <rect x="40" y="86" width="40" height="34" fill="#7ea2f0"/><text x="52" y="80" font-size="11" fill="#6b7894">49</text>
+          <rect x="90" y="118" width="40" height="2" fill="#ee8a8a"/><text x="104" y="112" font-size="11" fill="#c25555">3</text>
+          <text x="30" y="132" font-size="10" fill="#6b7894">four quiet: start, +4 wks</text>
+          <rect x="250" y="34" width="40" height="86" fill="#7ea2f0" opacity=".6"/><text x="259" y="28" font-size="11" fill="#6b7894">123</text>
+          <rect x="300" y="7" width="40" height="113" fill="#6bd3a1" opacity=".8"/><text x="309" y="2" font-size="11" fill="#2f9b6b">162</text>
+          <text x="250" y="132" font-size="10" fill="#6b7894">everyone else: start, +4 wks</text></svg></div>
+    </div>
+    <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 3 · #10 · as typed</span></div>
+      <div class="txt">I want to look now only at Farlight. Show me every week for them, how many times we pinged them, how many they took. Then tell me what happened to that person, week by week, in plain English.</div></div>
+  </div>
+</div></section>
+
+<section class="slide" id="s9"><div class="wrap">
+  <div class="modhead"><div class="modnum">4</div><div class="modname">Module 4 · X-ray vision</div></div>
+  <h2>A miss costs rank. Only a taken ping earns it back.</h2>
+  <div class="grid g2">
+    <div class="card"><h3>A responder's score</h3>
+      <svg viewBox="0 0 440 190" width="100%">
+        <line x1="40" y1="150" x2="430" y2="150" stroke="#d3dbea"/><text x="6" y="154" font-size="10" fill="#6b7894">floor 0</text>
+        <polyline points="50,40 90,70 130,100 170,130 210,150 250,150 290,150" fill="none" stroke="#ee8a8a" stroke-width="3"/>
+        <text x="50" y="30" font-size="11" fill="#c25555">miss, miss, miss: −0.12 each</text>
+        <polyline points="290,150 320,134 350,118 380,102" fill="none" stroke="#6bd3a1" stroke-width="3"/>
+        <text x="262" y="95" font-size="11" fill="#2f9b6b">a taken ping: +0.08</text>
+        <text x="262" y="176" font-size="11" fill="#6b7894">no fade, no other recovery</text>
+      </svg><span class="chip c-fact">Fact: history.py</span></div>
+    <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 4 · #12 · as typed</span></div>
+      <div class="txt">Find me the part of this code that takes points off somebody when they miss a ping or turn one down. Show it to me and explain it in plain English. Then find me every single thing in this code that puts points back on.</div></div>
+  </div>
+</div></section>
+
+<section class="slide" id="s10"><div class="wrap">
+  <div class="modhead"><div class="modnum">5</div><div class="modname">Module 5 · Super speed</div></div>
+  <h2>We built the fix as a one-page brief and a clickable prototype.</h2>
+  <div class="grid g2">
+    <div class="card"><h3>Artifacts</h3>
+      <div class="pill-row" style="margin-top:8px"><span><a href="05-super-speed/quiet-responders-brief.md">One-page brief</a></span><span><a href="05-super-speed/prototype.html">Clickable prototype</a></span></div>
+      <p class="small mute">Draft. Only Meteor Mite's 11 to 1 pings a week is real data.</p></div>
+    <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 5 · #8 · as typed</span></div>
+      <div class="txt">Take the brief you just wrote and build me a working prototype, an actual screen I can click through, not a description of one. Save it as 05-super-speed/prototype.html, a single file I can just open in my browser. Show me where this would actually happen, and make at least one thing on it respond when I click it.</div></div>
+  </div>
+</div></section>
+
+<section class="slide" id="s11"><div class="wrap">
+  <div class="kicker">The fix</div>
+  <h2>Try it: the same ping, seen by the person it happens to.</h2>
+  <p class="small mute" style="margin-bottom:10px">Click "Send a ping", then tap the notification.</p>
+  <iframe id="proto" class="proto-frame" title="Quiet responders prototype" sandbox="allow-scripts" srcdoc="&lt;!DOCTYPE html&gt;
 &lt;html lang=&quot;en&quot;&gt;
 &lt;head&gt;
 &lt;meta charset=&quot;utf-8&quot;&gt;
@@ -719,77 +621,55 @@
 &lt;/body&gt;
 &lt;/html&gt;
 "></iframe>
-    <p class="small mute" style="margin:8px 0 0">Not showing, or want it bigger? <a href="05-super-speed/prototype.html" target="_blank">Open the prototype in its own tab.</a></p>
-    <div class="grid g4" style="margin-top:16px">
-      <div class="card"><h3>1. A miss stops costing rank</h3><p class="small mute">A turn-down keeps its penalty.</p></div>
-      <div class="card"><h3>2. 75s, with a countdown</h3><p class="small mute">Between today's 60s and the old 90s.</p></div>
-      <div class="card"><h3>3. One-time rank restore</h3><p class="small mute">Everyone returns to a neutral value. Also wipes good history.</p></div>
-      <div class="card"><h3>4. "Gone quiet" flag + snooze</h3><p class="small mute">Read-only for handlers. Snooze keeps you in the queue.</p></div>
-    </div>
-    <p class="small mute" style="margin-top:12px">Optional, Helen's call: a dead-phone guard that skips a responder after about 3 misses in a row. Stage 2, after 2 to 3 weeks of data: recent acceptance weight 0.25 to 0.35, proximity held at 0.60.</p>
+  <p class="small mute" style="margin:8px 0 0">Not showing? <a href="05-super-speed/prototype.html" target="_blank">Open the prototype in its own tab.</a></p>
+  <div class="grid g4" style="margin-top:14px">
+    <div class="card"><h3>1. A miss is free</h3></div>
+    <div class="card"><h3>2. 75s with a countdown</h3></div>
+    <div class="card"><h3>3. One-time rank restore</h3></div>
+    <div class="card"><h3>4. "Gone quiet" flag and snooze</h3></div>
   </div>
-</section>
+</div></section>
 
-<!-- 12 MODULE 6 -->
-<section class="slide" id="s12">
-  <div class="wrap">
-    <div class="modhead"><div class="modnum">6</div><div><div class="modname">Module 6 · Sidekicks</div></div></div>
-    <h2>The review-checklist skill runs the same four checks on every brief, every Monday.</h2>
-    <div class="grid g2">
-      <div>
-        <div class="card">
-          <h3>Result on this brief (quiet-responders-brief.md)</h3>
-          <div class="check" style="margin:10px 0"><span class="badge b-part">PARTIAL</span><div><b>Owner.</b> <span class="small mute">Header says "Dispatch PM", a role, not a name. No owner for Stage 1 or 2.</span></div></div>
-          <div class="check" style="margin:10px 0"><span class="badge b-part">PARTIAL</span><div><b>Success measure.</b> <span class="small mute">Metrics have baselines, but "no targets set yet".</span></div></div>
-          <div class="check" style="margin:10px 0"><span class="badge b-part">PARTIAL</span><div><b>Scope matches.</b> <span class="small mute">Wait change and Stage 2 weights aren't set up in the problem; dead-phone guard sits oddly with "does not fix delivery".</span></div></div>
-          <div class="check" style="margin:10px 0"><span class="badge b-pass">PASS</span><div><b>Problem before fix.</b> <span class="small mute">Problem and evidence come first, with unknowns stated.</span></div></div>
-          <p style="margin-top:10px"><span class="chip c-open">Verdict: fix first</span></p>
-        </div>
-      </div>
-      <div>
-        <div class="prompt">
-          <div class="lab"><span>Prompt that produced it</span><span>Module 6 · #1 · exactly as typed</span></div>
-          <div class="txt">I want to save a habit as something I can reuse. When I review a brief before it goes any further, here's what I actually check for: - It names who owns it - It says how we'll know it worked - The scope at the end matches the scope at the start - It explains the problem before it proposes a fix Turn that into a skill called review-checklist, so I can point it at any brief and get the same check every time, without me explaining it again.</div>
-        </div>
-        <div class="card" style="margin-top:14px"><h3>Scheduled</h3><p class="small mute">Task <code>monday-review-checklist</code> runs Mondays about 9:06 AM local, first run 19 Oct 2026, read-only on briefs in this folder. It runs only while the app is open.</p></div>
-      </div>
+<section class="slide" id="s12"><div class="wrap">
+  <div class="modhead"><div class="modnum">6</div><div class="modname">Module 6 · Sidekicks</div></div>
+  <h2>A review skill runs the same four checks on every brief, every Monday.</h2>
+  <div class="grid g2">
+    <div class="card"><h3>Result on our brief</h3>
+      <div class="check" style="margin:10px 0"><span class="badge b-part">PARTIAL</span><b>Owner</b><span class="small mute">role only, no name</span></div>
+      <div class="check" style="margin:10px 0"><span class="badge b-part">PARTIAL</span><b>Success measure</b><span class="small mute">no targets yet</span></div>
+      <div class="check" style="margin:10px 0"><span class="badge b-part">PARTIAL</span><b>Scope matches</b><span class="small mute">drifts by Stage 2</span></div>
+      <div class="check" style="margin:10px 0"><span class="badge b-pass">PASS</span><b>Problem first</b></div>
+      <p style="margin-top:10px"><span class="chip c-open">Verdict: fix first</span></p></div>
+    <div>
+      <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 6 · #1 · as typed</span></div>
+        <div class="txt">I want to save a habit as something I can reuse. When I review a brief before it goes any further, here's what I actually check for: - It names who owns it - It says how we'll know it worked - The scope at the end matches the scope at the start - It explains the problem before it proposes a fix Turn that into a skill called review-checklist, so I can point it at any brief and get the same check every time, without me explaining it again.</div></div>
+      <p class="small mute" style="margin-top:10px">Scheduled: Mondays, about 9:06 AM. First run 19 Oct.</p>
     </div>
   </div>
-</section>
+</div></section>
 
-<!-- 13 PREVENTION -->
-<section class="slide" id="s13">
-  <div class="wrap">
-    <div class="kicker">How the skill keeps this from happening again</div>
-    <h2>Each check maps to something that went wrong around 4.2.</h2>
-    <div class="grid g2">
-      <div class="card"><div class="check"><span class="badge b-part">OWNER</span><div><p><b>Every roadmap row was owned by Priya, who has left.</b> Availability Confidence and Ping timeout tuning were committed for 4.2, never shipped, and nobody was asked.</p><p class="small mute">Fact (Q3 roadmap). The check forces a named owner before a brief moves on.</p></div></div></div>
-      <div class="card"><div class="check"><span class="badge b-part">MEASURE</span><div><p><b>"Ping timeout tuning" is one line.</b> The 90s to 60s cut shipped without a miss-rate guardrail that I can find in the sources.</p><p class="small mute">Inference: confirm with Helen. The check asks "how will we know it worked?" and the answer here would have been missed pings per responder.</p></div></div></div>
-      <div class="card"><div class="check"><span class="badge b-part">SCOPE</span><div><p><b>The 14 Aug question went unanswered:</b> was the proximity change meant for responders who turn pings down? The config does not distinguish them.</p><p class="small mute">Fact (4.2 comments). The check compares what a brief says it covers at the start with what it commits to at the end.</p></div></div></div>
-      <div class="card"><div class="check"><span class="badge b-pass">PROBLEM FIRST</span><div><p><b>"Seasonal dip, it will recover" arrived before any evidence.</b> It was repeated, with no numbers behind it.</p><p class="small mute">Fact: nothing in the sources shows September data. The check puts the problem and its evidence ahead of the fix, with unknowns named.</p></div></div></div>
-    </div>
-    <p class="small mute" style="margin-top:14px">A checklist is a floor, not a guarantee: it catches a missing owner or measure, not a wrong diagnosis. It does not replace talking to Wen Li.</p>
+<section class="slide" id="s13"><div class="wrap">
+  <div class="kicker">How the skill keeps this from happening again</div>
+  <h2>Each check maps to something that went wrong around 4.2.</h2>
+  <div class="grid g2">
+    <div class="card"><div class="check"><span class="badge b-part">OWNER</span><p>Every roadmap row was Priya's, and she has left.</p></div></div>
+    <div class="card"><div class="check"><span class="badge b-part">MEASURE</span><p>The wait cut had no miss-rate guardrail in the sources. <span class="chip c-inf">Inference</span></p></div></div>
+    <div class="card"><div class="check"><span class="badge b-part">SCOPE</span><p>Nobody answered whether proximity applied to decliners.</p></div></div>
+    <div class="card"><div class="check"><span class="badge b-pass">PROBLEM FIRST</span><p>"Seasonal, it will recover" came before any data.</p></div></div>
   </div>
-</section>
+  <p class="small mute" style="margin-top:14px">A floor, not a guarantee: it catches gaps, not wrong diagnoses.</p>
+</div></section>
 
-<!-- 14 NEXT -->
-<section class="slide" id="s14">
-  <div class="wrap">
-    <div class="kicker">What I need next</div>
-    <h2>Three decisions for Helen, and what is still unknown.</h2>
-    <div class="grid g2">
-      <div class="card hl">
-        <h3>What we need from Helen</h3>
-        <p>We need three calls from Helen. First, whether the dead-phone guard belongs in Stage 1. Second, whether this plan replaces Availability Confidence and Ping timeout tuning, both committed for 4.2 and unshipped, or whether they are dropped or re-dated. Third, a go-ahead to take the brief to Marcus Oyelaran and Wen Li first, since <code>config.py</code> says to tell the engineering manager before changing anything.</p>
-      </div>
-      <div class="card">
-        <h3>Still open</h3>
-        <p class="small mute"><span class="chip c-open">Open</span>We still do not know why the four miss so often (delivery, the 60s wait, or availability), because no delivery logs exist. We need Wen Li on miss versus decline handling, the neutral restore value and restart behaviour. We also need to replay the rank restore against the data, find out what happened to the 23 callouts that ended on a miss, talk to Dot and Kip, and get the official weekly series and prior-year data from Ravi Menon. No responder has been interviewed.</p>
-      </div>
-    </div>
-    <div class="card" style="margin-top:18px"><h3>Risks we are choosing with open eyes</h3><p class="small mute">A free miss next to a costly turn-down could teach responders to let pings lapse. A 75s wait is slower than 60s, and callouts never taken already rose from 5.5% to 11.1%. The restore could move out-of-area pings, and snooze touches the availability record Supply reads.</p></div>
+<section class="slide" id="s14"><div class="wrap">
+  <div class="kicker">What we need from Helen</div>
+  <h2>Three decisions, and what is still unknown.</h2>
+  <div class="grid g2">
+    <div class="card hl"><h3>Decisions</h3>
+      <div class="flow" style="margin-top:8px;flex-direction:column"><div><span>1</span>Dead-phone guard in Stage 1?</div><div><span>2</span>Replaces Availability Confidence and Ping timeout tuning?</div><div><span>3</span>OK to take the brief to Marcus and Wen first?</div></div></div>
+    <div class="card"><h3>Still open</h3>
+      <div class="pill-row" style="margin-top:8px"><span>Why the four miss</span><span>Wen on miss vs decline</span><span>Replay the restore</span><span>23 callouts that ended on a miss</span><span>Calls with Dot and Kip</span><span>Prior-year data (Ravi)</span></div></div>
   </div>
-</section>
+</div></section>
 
 <script>
   const slides=[...document.querySelectorAll('.slide')];
