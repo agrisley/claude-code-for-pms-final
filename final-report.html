@@ -197,11 +197,180 @@
       <div class="card" style="margin-top:14px"><h3>Journey map</h3>
         <div class="lane" style="grid-template-columns:90px 1fr 1fr"><div class="who">Handler</div><div class="bad">Pings lapse, tickets pile up</div><div class="good">Wants early warning</div></div>
         <div class="lane" style="grid-template-columns:90px 1fr 1fr"><div class="who">Responder</div><div class="bad">60s, misses cost rank</div><div class="good">Wants work offered again</div></div>
-        <p class="small mute"><a href="00-rook/feedback/journey-map.html">Open the journey map</a></p></div>
+        <p class="small mute">Full map below. <a href="00-rook/feedback/journey-map.html" target="_blank">Open in its own tab.</a></p></div>
     </div>
     <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 2 · #7 · as typed</span></div>
       <div class="txt">create a journey map artifact of the process for our users with a row for action/job, thinking (per interviews), data before aug 12 and data after aug 12 , whose role is handling what. this should pain the story of whats happening visually, ask me 1-3 clariyfing questions as needed</div></div>
   </div>
+
+  <iframe id="mapf" class="proto-frame" style="height:600px;margin-top:16px" title="Journey map" sandbox="allow-scripts" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta charset=&quot;utf-8&quot;&gt;
+&lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;&gt;
+&lt;title&gt;Rook Dispatch: one callout, before and after 4.2&lt;/title&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css&quot;&gt;
+&lt;style&gt;
+:root{--surface-1:#f5f4ee;--surface-2:#ffffff;--border:rgba(0,0,0,.12);--border-strong:rgba(0,0,0,.25);--border-stronger:rgba(0,0,0,.4);--text-primary:#1f1e1d;--text-secondary:#5f5e5a;--text-muted:#888780;--text-danger:#a32d2d;--bg-danger:#fcebeb;--text-warning:#854f0b;--bg-warning:#faeeda;--radius:8px;--font-sans:system-ui,-apple-system,&quot;Segoe UI&quot;,sans-serif;--font-voice:Georgia,serif}
+@media (prefers-color-scheme: dark){:root{--surface-1:#2a2a28;--surface-2:#1f1e1d;--border:rgba(255,255,255,.14);--border-strong:rgba(255,255,255,.28);--border-stronger:rgba(255,255,255,.45);--text-primary:#f1efe8;--text-secondary:#b4b2a9;--text-muted:#888780;--text-danger:#f09595;--bg-danger:#501313;--text-warning:#fac775;--bg-warning:#412402}}
+body{font-family:var(--font-sans);background:var(--surface-2);color:var(--text-primary);max-width:760px;margin:24px auto;padding:0 16px;line-height:1.5}
+h1{font-size:22px;font-weight:500;margin:0 0 4px}
+.sub{font-size:13px;color:var(--text-secondary);margin:0 0 12px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.g{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.c{background:var(--surface-1);border-radius:var(--radius);padding:8px 10px;font-size:12px;line-height:1.45;color:var(--text-primary)}
+.h{border-radius:var(--radius);padding:8px 10px;font-size:13px;font-weight:500;position:relative}
+.h small{display:block;font-size:11px;font-weight:400;margin-top:2px}
+.h.n{background:var(--surface-1);color:var(--text-primary)}
+.h.w{background:var(--bg-warning);color:var(--text-warning)}
+.h.r{background:var(--bg-danger);color:var(--text-danger)}
+.rl{font-size:12px;font-weight:500;color:var(--text-secondary);margin:14px 0 6px;display:flex;align-items:center;gap:6px}
+.rl span{font-weight:400;color:var(--text-muted)}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:2px 8px;border:0.5px solid var(--border-strong);border-radius:var(--radius);margin:0 4px 4px 0;background:var(--surface-2)}
+.q{font-family:var(--font-voice);font-size:13px}
+.q b{display:block;font-family:var(--font-sans);font-weight:400;font-size:11px;color:var(--text-muted);margin-top:4px}
+.ar{position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:14px;z-index:1;color:var(--text-muted)}
+.dz{border:0.5px solid var(--border-strong);border-radius:12px;padding:4px 12px 14px;margin-top:16px;background:var(--surface-2)}
+.dz .big{font-size:26px;font-weight:500;line-height:1.15}
+.bar{height:10px;border-radius:5px;background:var(--border);margin:8px 0 6px}
+.bar i{display:block;height:100%;border-radius:5px;background:var(--text-muted)}
+.a.r{background:var(--bg-danger);color:var(--text-danger)}
+.a.w{background:var(--bg-warning);color:var(--text-warning)}
+.a .bar{background:rgba(127,127,127,.2)}
+.a .bar i{background:currentColor}
+.src{font-size:11px;color:var(--text-muted);margin-top:4px}
+.a .src{color:inherit;opacity:.8}
+.d{text-align:center;padding:10px 6px}
+.d b{display:block;font-size:20px;font-weight:500;color:var(--text-danger)}
+.d span{font-size:11px;color:var(--text-secondary)}
+.tl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:6px}
+.tl h3{font-size:13px;font-weight:500;margin:0 0 2px}
+.tl p{font-size:12px;color:var(--text-secondary);margin:0}
+.sv{font-size:11px;fill:var(--text-secondary)}
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;h1&gt;Rook Dispatch: one callout, before and after 4.2&lt;/h1&gt;
+&lt;p class=&quot;sub&quot;&gt;Before = 29 Jun to 11 Aug. After = 12 Aug to 7 Sep. Pings and callouts from rook-database; tickets from support_tickets; quotes from four September handler interviews.&lt;/p&gt;
+&lt;h2 class=&quot;sr&quot;&gt;Journey map of one callout in Rook Dispatch with a highlighted call data section: before and after 12 August by stage, plus weekly charts of pings, missed pings and callout tickets.&lt;/h2&gt;
+
+&lt;div class=&quot;g&quot; style=&quot;margin-top:4px&quot;&gt;
+  &lt;div class=&quot;h w&quot;&gt;1 · Rank&lt;small&gt;Changed, unseen&lt;/small&gt;&lt;i class=&quot;ti ti-chevron-right ar&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class=&quot;h w&quot;&gt;2 · Ping sent&lt;small&gt;Pings shifted&lt;/small&gt;&lt;i class=&quot;ti ti-chevron-right ar&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class=&quot;h r&quot;&gt;3 · Responder answers&lt;small&gt;Hurting&lt;/small&gt;&lt;i class=&quot;ti ti-chevron-right ar&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class=&quot;h r&quot;&gt;4 · Moves on&lt;small&gt;Hurting&lt;/small&gt;&lt;i class=&quot;ti ti-chevron-right ar&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;&lt;/div&gt;
+  &lt;div class=&quot;h r&quot;&gt;5 · Aftermath&lt;small&gt;Hurting&lt;/small&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;rl&quot;&gt;&lt;i class=&quot;ti ti-users&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Who is handling it &lt;span&gt;by role&lt;/span&gt;&lt;/div&gt;
+&lt;div class=&quot;g&quot;&gt;
+  &lt;div class=&quot;c&quot;&gt;&lt;span class=&quot;chip&quot;&gt;&lt;i class=&quot;ti ti-cpu&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Rook ranking&lt;/span&gt;&lt;span class=&quot;chip&quot;&gt;&lt;i class=&quot;ti ti-user&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Wen Li, Marcus&lt;/span&gt;&lt;span class=&quot;chip&quot;&gt;&lt;i class=&quot;ti ti-headset&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Handler watches&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;c&quot;&gt;&lt;span class=&quot;chip&quot;&gt;&lt;i class=&quot;ti ti-cpu&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Rook push&lt;/span&gt;&lt;span class=&quot;chip&quot;&gt;&lt;i class=&quot;ti ti-device-mobile&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Responder&#x27;s phone&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;c&quot;&gt;&lt;span class=&quot;chip&quot;&gt;&lt;i class=&quot;ti ti-device-mobile&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Responder&lt;/span&gt;&lt;br&gt;Alone, phone in hand&lt;/div&gt;
+  &lt;div class=&quot;c&quot;&gt;&lt;span class=&quot;chip&quot;&gt;&lt;i class=&quot;ti ti-cpu&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Rook ranking&lt;/span&gt;&lt;span class=&quot;chip&quot;&gt;&lt;i class=&quot;ti ti-headset&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Handler, after the fact&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;c&quot;&gt;&lt;span class=&quot;chip&quot;&gt;&lt;i class=&quot;ti ti-headset&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Handler&lt;/span&gt;&lt;span class=&quot;chip&quot;&gt;&lt;i class=&quot;ti ti-lifebuoy&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Nadia&lt;/span&gt;&lt;span class=&quot;chip&quot;&gt;&lt;i class=&quot;ti ti-chart-bar&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Ravi&lt;/span&gt;&lt;span class=&quot;chip&quot;&gt;&lt;i class=&quot;ti ti-compass&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;PM, Helen&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;rl&quot;&gt;&lt;i class=&quot;ti ti-bolt&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Action or job&lt;/div&gt;
+&lt;div class=&quot;g&quot;&gt;
+  &lt;div class=&quot;c&quot;&gt;A callout comes in. Rook ranks responders by routing priority.&lt;/div&gt;
+  &lt;div class=&quot;c&quot;&gt;A ping goes to the top-ranked responder&#x27;s phone.&lt;/div&gt;
+  &lt;div class=&quot;c&quot;&gt;They take it, turn it down, or miss it within the ping wait.&lt;/div&gt;
+  &lt;div class=&quot;c&quot;&gt;If it isn&#x27;t taken, it moves to the next responder.&lt;/div&gt;
+  &lt;div class=&quot;c&quot;&gt;Handlers reassure and file tickets. Support, Data and PM look for the cause.&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;rl&quot;&gt;&lt;i class=&quot;ti ti-message-circle&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;What they&#x27;re thinking &lt;span&gt;four September interviews&lt;/span&gt;&lt;/div&gt;
+&lt;div class=&quot;g&quot;&gt;
+  &lt;div class=&quot;c q&quot;&gt;&quot;I&#x27;m not the person to ask about that part.&quot;&lt;b&gt;Kip&lt;/b&gt;&lt;/div&gt;
+  &lt;div class=&quot;c q&quot;&gt;&quot;I&#x27;ll hear it buzz on the counter before he does.&quot;&lt;b&gt;Dot&lt;/b&gt;&lt;/div&gt;
+  &lt;div class=&quot;c q&quot;&gt;&quot;By the time he&#x27;s actually got a thumb on the screen — it&#x27;s gone.&quot;&lt;b&gt;Dot&lt;/b&gt;&lt;/div&gt;
+  &lt;div class=&quot;c q&quot;&gt;&quot;I heard about it after the fact, from him, not from the console.&quot;&lt;b&gt;Ambrose&lt;/b&gt;&lt;/div&gt;
+  &lt;div class=&quot;c q&quot;&gt;&quot;Mite thinks Mite&#x27;s been forgotten. Gale&#x27;s exhausted.&quot;&lt;b&gt;Kip&lt;/b&gt;&lt;/div&gt;
+&lt;/div&gt;
+
+&lt;div class=&quot;dz&quot;&gt;
+  &lt;div class=&quot;rl&quot; style=&quot;margin-top:10px;color:var(--text-primary)&quot;&gt;&lt;i class=&quot;ti ti-database&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Call data &lt;span&gt;Bars share a scale within each column.&lt;/span&gt;&lt;/div&gt;
+
+  &lt;div class=&quot;rl&quot; style=&quot;margin-top:8px&quot;&gt;&lt;i class=&quot;ti ti-calendar-event&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Before 12 Aug &lt;span&gt;29 Jun to 11 Aug&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;g&quot;&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;div class=&quot;big&quot;&gt;39%&lt;/div&gt;of pings to the top 5 responders&lt;div class=&quot;bar&quot;&gt;&lt;i style=&quot;width:65%&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&quot;src&quot;&gt;Spread: 39–95 pings each&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;div class=&quot;big&quot;&gt;49/wk&lt;/div&gt;pings to the four who later went quiet&lt;div class=&quot;bar&quot;&gt;&lt;i style=&quot;width:98%&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&quot;src&quot;&gt;6 tickets on duplicate or unreliable pings&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;div class=&quot;big&quot;&gt;2%&lt;/div&gt;of pings missed. Wait was 90s&lt;div class=&quot;bar&quot;&gt;&lt;i style=&quot;width:10%&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&quot;src&quot;&gt;Taken 75–78% weekly&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;div class=&quot;big&quot;&gt;3%&lt;/div&gt;of callouts had a missed ping&lt;div class=&quot;bar&quot;&gt;&lt;i style=&quot;width:12%&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&quot;src&quot;&gt;22% needed a second ping&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;c&quot;&gt;&lt;div class=&quot;big&quot;&gt;1.0/wk&lt;/div&gt;callout tickets&lt;div class=&quot;bar&quot;&gt;&lt;i style=&quot;width:8%&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&quot;src&quot;&gt;None on pings vanishing or quiet&lt;/div&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;rl&quot;&gt;&lt;i class=&quot;ti ti-calendar-stats&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;After 12 Aug &lt;span&gt;12 Aug to 7 Sep&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;g&quot;&gt;
+    &lt;div class=&quot;c a w&quot;&gt;&lt;div class=&quot;big&quot;&gt;51%&lt;/div&gt;of pings to the top 5. Out-of-area pings 17% → 39%&lt;div class=&quot;bar&quot;&gt;&lt;i style=&quot;width:85%&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&quot;src&quot;&gt;Area is a rough proxy&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;c a w&quot;&gt;&lt;div class=&quot;big&quot;&gt;3/wk&lt;/div&gt;to the four by 31 Aug. Everyone else 123 → 162&lt;div class=&quot;bar&quot;&gt;&lt;i style=&quot;width:6%&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&quot;src&quot;&gt;The Gale 13 → 21/wk&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;c a r&quot;&gt;&lt;div class=&quot;big&quot;&gt;13%&lt;/div&gt;missed. The four: 53–64%. Wait now 60s&lt;div class=&quot;bar&quot;&gt;&lt;i style=&quot;width:65%&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&quot;src&quot;&gt;Taken 54% in release week, about 73% by 31 Aug&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;c a r&quot;&gt;&lt;div class=&quot;big&quot;&gt;23%&lt;/div&gt;of callouts had a missed ping&lt;div class=&quot;bar&quot;&gt;&lt;i style=&quot;width:92%&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&quot;src&quot;&gt;33% needed a second ping&lt;/div&gt;&lt;/div&gt;
+    &lt;div class=&quot;c a r&quot;&gt;&lt;div class=&quot;big&quot;&gt;11.7/wk&lt;/div&gt;callout tickets. 32 quiet, 13 ping gone&lt;div class=&quot;bar&quot;&gt;&lt;i style=&quot;width:97%&quot;&gt;&lt;/i&gt;&lt;/div&gt;&lt;div class=&quot;src&quot;&gt;All 45 still open&lt;/div&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;rl&quot;&gt;&lt;i class=&quot;ti ti-arrows-diff&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Change&lt;/div&gt;
+  &lt;div class=&quot;g&quot;&gt;
+    &lt;div class=&quot;c d&quot;&gt;&lt;b&gt;+12 pts&lt;/b&gt;&lt;span&gt;top-5 share&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c d&quot;&gt;&lt;b&gt;−94%&lt;/b&gt;&lt;span&gt;pings to the four&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c d&quot;&gt;&lt;b&gt;×6&lt;/b&gt;&lt;span&gt;missed pings&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c d&quot;&gt;&lt;b&gt;×8&lt;/b&gt;&lt;span&gt;callouts with a miss&lt;/span&gt;&lt;/div&gt;
+    &lt;div class=&quot;c d&quot;&gt;&lt;b&gt;×12&lt;/b&gt;&lt;span&gt;callout tickets&lt;/span&gt;&lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class=&quot;rl&quot; style=&quot;margin-top:18px&quot;&gt;&lt;i class=&quot;ti ti-chart-line&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;Week by week &lt;span&gt;10 weeks from 29 Jun. Dashed line is 12 Aug.&lt;/span&gt;&lt;/div&gt;
+  &lt;div class=&quot;tl&quot;&gt;
+    &lt;div&gt;
+      &lt;h3&gt;Pings per week&lt;/h3&gt;&lt;p&gt;Same work, shared differently&lt;/p&gt;
+      &lt;svg width=&quot;100%&quot; viewBox=&quot;0 0 220 135&quot; role=&quot;img&quot;&gt;&lt;title&gt;Pings per week&lt;/title&gt;&lt;desc&gt;Pings to four responders fall from about 49 to 3 a week after 12 August while pings to everyone else rise from about 123 to 162.&lt;/desc&gt;
+        &lt;line x1=&quot;12&quot; y1=&quot;110&quot; x2=&quot;208&quot; y2=&quot;110&quot; style=&quot;stroke:var(--border-strong)&quot; stroke-width=&quot;0.5&quot;/&gt;
+        &lt;line x1=&quot;145&quot; y1=&quot;8&quot; x2=&quot;145&quot; y2=&quot;112&quot; style=&quot;stroke:var(--text-muted)&quot; stroke-width=&quot;1&quot; stroke-dasharray=&quot;3 3&quot;/&gt;
+        &lt;polyline fill=&quot;none&quot; style=&quot;stroke:var(--text-muted)&quot; stroke-width=&quot;2&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; points=&quot;20,37.6 40,38.2 60,35.9 80,35.9 100,39.4 120,37.6 140,31.2 160,26.5 180,18.2 200,14.7&quot;/&gt;
+        &lt;polyline fill=&quot;none&quot; style=&quot;stroke:var(--text-danger)&quot; stroke-width=&quot;2.5&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot; points=&quot;20,81.2 40,81.8 60,81.8 80,80.6 100,80.6 120,81.2 140,84.7 160,100.6 180,106.5 200,108.2&quot;/&gt;
+        &lt;text class=&quot;sv&quot; x=&quot;22&quot; y=&quot;22&quot;&gt;Everyone else 123 → 162&lt;/text&gt;
+        &lt;text class=&quot;sv&quot; x=&quot;22&quot; y=&quot;68&quot; style=&quot;fill:var(--text-danger)&quot;&gt;The four 49 → 3&lt;/text&gt;
+        &lt;text class=&quot;sv&quot; x=&quot;8&quot; y=&quot;126&quot;&gt;29 Jun&lt;/text&gt;&lt;text class=&quot;sv&quot; x=&quot;145&quot; y=&quot;126&quot; text-anchor=&quot;middle&quot;&gt;12 Aug&lt;/text&gt;&lt;text class=&quot;sv&quot; x=&quot;172&quot; y=&quot;126&quot;&gt;31 Aug&lt;/text&gt;
+      &lt;/svg&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+      &lt;h3&gt;Missed pings per week&lt;/h3&gt;&lt;p&gt;From 2–6 to 38, still 21&lt;/p&gt;
+      &lt;svg width=&quot;100%&quot; viewBox=&quot;0 0 220 135&quot; role=&quot;img&quot;&gt;&lt;title&gt;Missed pings per week&lt;/title&gt;&lt;desc&gt;Missed pings run 2 to 6 a week before the 4.2 release, jump to 38 in the release week, then ease to 28, 24 and 21.&lt;/desc&gt;
+        &lt;line x1=&quot;12&quot; y1=&quot;110&quot; x2=&quot;208&quot; y2=&quot;110&quot; style=&quot;stroke:var(--border-strong)&quot; stroke-width=&quot;0.5&quot;/&gt;
+        &lt;rect x=&quot;14&quot; y=&quot;102.5&quot; width=&quot;12&quot; height=&quot;7.5&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-muted)&quot;/&gt;&lt;rect x=&quot;34&quot; y=&quot;100&quot; width=&quot;12&quot; height=&quot;10&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-muted)&quot;/&gt;&lt;rect x=&quot;54&quot; y=&quot;95&quot; width=&quot;12&quot; height=&quot;15&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-muted)&quot;/&gt;&lt;rect x=&quot;74&quot; y=&quot;97.5&quot; width=&quot;12&quot; height=&quot;12.5&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-muted)&quot;/&gt;&lt;rect x=&quot;94&quot; y=&quot;100&quot; width=&quot;12&quot; height=&quot;10&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-muted)&quot;/&gt;&lt;rect x=&quot;114&quot; y=&quot;105&quot; width=&quot;12&quot; height=&quot;5&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-muted)&quot;/&gt;
+        &lt;rect x=&quot;134&quot; y=&quot;15&quot; width=&quot;12&quot; height=&quot;95&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-danger)&quot;/&gt;&lt;rect x=&quot;154&quot; y=&quot;40&quot; width=&quot;12&quot; height=&quot;70&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-danger)&quot;/&gt;&lt;rect x=&quot;174&quot; y=&quot;50&quot; width=&quot;12&quot; height=&quot;60&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-danger)&quot;/&gt;&lt;rect x=&quot;194&quot; y=&quot;57.5&quot; width=&quot;12&quot; height=&quot;52.5&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-danger)&quot;/&gt;
+        &lt;line x1=&quot;145&quot; y1=&quot;8&quot; x2=&quot;145&quot; y2=&quot;112&quot; style=&quot;stroke:var(--text-muted)&quot; stroke-width=&quot;1&quot; stroke-dasharray=&quot;3 3&quot;/&gt;
+        &lt;text class=&quot;sv&quot; x=&quot;22&quot; y=&quot;30&quot;&gt;38 in the&lt;/text&gt;&lt;text class=&quot;sv&quot; x=&quot;22&quot; y=&quot;44&quot;&gt;release week&lt;/text&gt;
+        &lt;text class=&quot;sv&quot; x=&quot;8&quot; y=&quot;126&quot;&gt;29 Jun&lt;/text&gt;&lt;text class=&quot;sv&quot; x=&quot;145&quot; y=&quot;126&quot; text-anchor=&quot;middle&quot;&gt;12 Aug&lt;/text&gt;&lt;text class=&quot;sv&quot; x=&quot;172&quot; y=&quot;126&quot;&gt;31 Aug&lt;/text&gt;
+      &lt;/svg&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+      &lt;h3&gt;Callout tickets per week&lt;/h3&gt;&lt;p&gt;Ping gone first, then quiet&lt;/p&gt;
+      &lt;svg width=&quot;100%&quot; viewBox=&quot;0 0 220 135&quot; role=&quot;img&quot;&gt;&lt;title&gt;Callout tickets per week&lt;/title&gt;&lt;desc&gt;Callout-related tickets are 0 to 2 a week before 12 August. Ping-gone tickets peak at 7 in the release week, then quiet tickets rise to 13 by the week of 24 August.&lt;/desc&gt;
+        &lt;line x1=&quot;12&quot; y1=&quot;110&quot; x2=&quot;208&quot; y2=&quot;110&quot; style=&quot;stroke:var(--border-strong)&quot; stroke-width=&quot;0.5&quot;/&gt;
+        &lt;rect x=&quot;34&quot; y=&quot;103.75&quot; width=&quot;12&quot; height=&quot;6.25&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-muted)&quot;/&gt;&lt;rect x=&quot;54&quot; y=&quot;97.5&quot; width=&quot;12&quot; height=&quot;12.5&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-muted)&quot;/&gt;&lt;rect x=&quot;114&quot; y=&quot;97.5&quot; width=&quot;12&quot; height=&quot;12.5&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-muted)&quot;/&gt;
+        &lt;rect x=&quot;134&quot; y=&quot;103.75&quot; width=&quot;12&quot; height=&quot;6.25&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-muted)&quot;/&gt;&lt;rect x=&quot;134&quot; y=&quot;60&quot; width=&quot;12&quot; height=&quot;43.75&quot; style=&quot;fill:var(--text-warning)&quot;/&gt;
+        &lt;rect x=&quot;154&quot; y=&quot;91.25&quot; width=&quot;12&quot; height=&quot;18.75&quot; style=&quot;fill:var(--text-warning)&quot;/&gt;&lt;rect x=&quot;154&quot; y=&quot;41.25&quot; width=&quot;12&quot; height=&quot;50&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-danger)&quot;/&gt;
+        &lt;rect x=&quot;174&quot; y=&quot;97.5&quot; width=&quot;12&quot; height=&quot;12.5&quot; style=&quot;fill:var(--text-warning)&quot;/&gt;&lt;rect x=&quot;174&quot; y=&quot;16.25&quot; width=&quot;12&quot; height=&quot;81.25&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-danger)&quot;/&gt;
+        &lt;rect x=&quot;194&quot; y=&quot;103.75&quot; width=&quot;12&quot; height=&quot;6.25&quot; style=&quot;fill:var(--text-warning)&quot;/&gt;&lt;rect x=&quot;194&quot; y=&quot;47.5&quot; width=&quot;12&quot; height=&quot;56.25&quot; rx=&quot;2&quot; style=&quot;fill:var(--text-danger)&quot;/&gt;
+        &lt;line x1=&quot;145&quot; y1=&quot;8&quot; x2=&quot;145&quot; y2=&quot;112&quot; style=&quot;stroke:var(--text-muted)&quot; stroke-width=&quot;1&quot; stroke-dasharray=&quot;3 3&quot;/&gt;
+        &lt;text class=&quot;sv&quot; x=&quot;22&quot; y=&quot;30&quot;&gt;Peak 15&lt;/text&gt;
+        &lt;text class=&quot;sv&quot; x=&quot;8&quot; y=&quot;126&quot;&gt;29 Jun&lt;/text&gt;&lt;text class=&quot;sv&quot; x=&quot;145&quot; y=&quot;126&quot; text-anchor=&quot;middle&quot;&gt;12 Aug&lt;/text&gt;&lt;text class=&quot;sv&quot; x=&quot;172&quot; y=&quot;126&quot;&gt;31 Aug&lt;/text&gt;
+      &lt;/svg&gt;
+      &lt;p&gt;&lt;span style=&quot;color:var(--text-warning)&quot;&gt;■&lt;/span&gt; ping gone &amp;nbsp;&lt;span style=&quot;color:var(--text-danger)&quot;&gt;■&lt;/span&gt; quiet &amp;nbsp;&lt;span style=&quot;color:var(--text-muted)&quot;&gt;■&lt;/span&gt; other&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;p style=&quot;font-size:12px;color:var(--text-secondary);margin:10px 0 0&quot;&gt;Charts count weeks starting Monday, so the 12 Aug week includes 10–11 Aug before launch.&lt;/p&gt;
+&lt;/div&gt;
+
+&lt;div style=&quot;margin-top:16px;border:0.5px dashed var(--border-stronger);border-radius:var(--radius);padding:10px 12px;font-size:12px;color:var(--text-secondary);display:flex;gap:8px;align-items:flex-start&quot;&gt;
+  &lt;i class=&quot;ti ti-refresh&quot; style=&quot;font-size:16px;margin-top:1px&quot; aria-hidden=&quot;true&quot;&gt;&lt;/i&gt;
+  &lt;span&gt;Inferred loop, not confirmed: a miss lowers recent acceptance, which lowers rank, which sends fewer pings, which means fewer chances to take one. Wen Li needs to confirm.&lt;/span&gt;
+&lt;/div&gt;
+&lt;script&gt;parent.postMessage(&#x27;map-ready&#x27;,&#x27;*&#x27;)&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+"></iframe>
 </div></section>
 
 <section class="slide" id="s8"><div class="wrap">
@@ -250,7 +419,7 @@
   <h2>We built the fix as a one-page brief and a clickable prototype.</h2>
   <div class="grid g2">
     <div class="card"><h3>Artifacts</h3>
-      <div class="pill-row" style="margin-top:8px"><span><a href="05-super-speed/quiet-responders-brief.md">One-page brief</a></span><span><a href="05-super-speed/prototype.html">Clickable prototype</a></span></div>
+      <div class="pill-row" style="margin-top:8px"><span><a href="https://github.com/agrisley/claude-code-for-pms-final/blob/main/05-super-speed/quiet-responders-brief.md" target="_blank">One-page brief</a></span><span><a href="#s11">Clickable prototype (next slides)</a></span></div>
       <p class="small mute">Draft. Only Meteor Mite's 11 to 1 pings a week is real data.</p></div>
     <div class="prompt"><div class="lab"><span>Prompt</span><span>Module 5 · #8 · as typed</span></div>
       <div class="txt">Take the brief you just wrote and build me a working prototype, an actual screen I can click through, not a description of one. Save it as 05-super-speed/prototype.html, a single file I can just open in my browser. Show me where this would actually happen, and make at least one thing on it respond when I click it.</div></div>
@@ -687,6 +856,8 @@
   });
   const pf=document.getElementById('proto');let ready=false;
   addEventListener('message',e=>{if(e.data==='proto-ready')ready=true;});
+  const mf=document.getElementById('mapf');let mready=false;addEventListener('message',e=>{if(e.data==='map-ready')mready=true;});
+  setTimeout(()=>{if(!mready){mf.removeAttribute('srcdoc');mf.src='00-rook/feedback/journey-map.html';}},2500);
   setTimeout(()=>{if(!ready){pf.removeAttribute('srcdoc');pf.src='05-super-speed/prototype.html';}},2500);
 </script>
 </body>
